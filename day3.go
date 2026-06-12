@@ -30,7 +30,7 @@ func main() {
 	fmt.Printf("Setelah Append: %v | Len: %d | Cap: %d\n", scores, len(scores), cap(scores))
 
 	// Membuat struct
-	product := Product{
+	product := Product3{
 		Name:  "Laptop",
 		Price: 10000000,
 	}
@@ -77,18 +77,18 @@ func main() {
 
 }
 
-type Product struct {
+type Product3 struct {
 	Name  string
 	Price float64
 }
 
 // Value Receiver: Hanya membaca data
-func (p Product) Display() {
+func (p Product3) Display() {
 	fmt.Printf("Produk: %s | Harga: Rp %.2f\n", p.Name, p.Price)
 }
 
 // Pointer Receiver: Mengubah nilai asli di memori
-func (p *Product) ApplyDiscount(discount float64) {
+func (p *Product3) ApplyDiscount(discount float64) {
 	p.Price -= discount
 }
 

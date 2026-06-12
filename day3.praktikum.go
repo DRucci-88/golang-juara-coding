@@ -14,7 +14,7 @@ var (
 
 	ErrQtyInvalid    = errors.New("Invalid: kuantitas belanja krang atau sama dengan 0")
 	ErrInvalidCoupon = errors.New("Checkout: kuantitas atau nominal tidak cocok")
-	ErrCartEmpty     = errors.New("Invalid: ")
+	ErrCartEmpty     = errors.New("Invalid: keranjang kosong")
 )
 
 // 2. Struct Model
@@ -94,4 +94,5 @@ func main() {
 		fmt.Println("[GAGAL]", errNotFound)
 	}
 	fmt.Println(store)
+
 }
