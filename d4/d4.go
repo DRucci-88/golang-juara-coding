@@ -5,6 +5,10 @@ import (
 	"fmt"
 )
 
+/*
+Pemrograman Berorientasi Objek ala Go: Menguasai Struct, Method, dan Optimasi Pointer
+*/
+
 type Customer struct {
 	ID    string
 	Name  string
@@ -25,7 +29,7 @@ type Vendor struct {
 }
 
 // Struct Tag (Sangat Penting untuk JSON Backen
-type Product1 struct {
+type Product struct {
 	ID    string  `json:"id"`
 	Name  string  `json:"product_name"`
 	Price float64 `json:"price"`
