@@ -120,6 +120,7 @@ func halamanRegistrasiProduk(reader *bufio.Reader, market *MarketplacePlatform2)
 	harga := readFloat2(reader, "Harga: ")
 	stok := readInt2(reader, "Stok: ")
 
+	// Buat Testing
 	// merchantId := "m1"
 	// productID := "p1"
 	// name := "n1"
@@ -162,7 +163,7 @@ func halamanShowProduct(market *MarketplacePlatform2) {
 	for merchantId, products := range market.Products {
 		fmt.Printf("Merchant ID [%s]: \n", merchantId)
 		for idx, product := range products {
-			fmt.Printf("    %d. %v\n", idx, product)
+			fmt.Printf("    %d. %+v\n", idx+1, product)
 		}
 	}
 	fmt.Println("\n===============\n")
