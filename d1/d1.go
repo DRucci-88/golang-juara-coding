@@ -1,5 +1,8 @@
 package main
 
+/*
+Menguasai Fundamental Go: Setup Lingkungan, Manajemen Variabel, dan Operasi Data
+*/
 import (
 	"fmt"
 	"strconv"
