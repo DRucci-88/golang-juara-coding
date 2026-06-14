@@ -1,5 +1,9 @@
 package main
 
+/*
+Sesi 4: Praktikum Mandiri: "Sistem Manajemen Inventaris & Penjualan" (45 Menit)
+*/
+
 import (
 	"errors"
 	"fmt"
@@ -7,42 +11,42 @@ import (
 
 // 1. Definisikan Sentinel Errors untuk Validasi Data
 var (
-	ErrEmptyName    = errors.New("Invalid: nama produ tidak boleh kosong")
-	ErrNegativeVal  = errors.New("invalid: harga atau stok tidak boleh bernilai negatif")
-	ErrInsufficient = errors.New("Checkout: stok barang tidak mencukupi")
-	ErrNotFound     = errors.New("Checkout: barang tidak ditemukan di sistem")
+	ErrEmptyNameP    = errors.New("Invalid: nama produ tidak boleh kosong")
+	ErrNegativeValP  = errors.New("invalid: harga atau stok tidak boleh bernilai negatif")
+	ErrInsufficientP = errors.New("Checkout: stok barang tidak mencukupi")
+	ErrNotFoundP     = errors.New("Checkout: barang tidak ditemukan di sistem")
 )
 
 // 2. Struct Model
-type Item struct {
+type ItemP struct {
 	Name  string
 	Price float64
 	Stock int
 }
-type StoreInventory struct {
-	Items []Item
+type StoreInventoryP struct {
+	Items []ItemP
 }
 
 // 3. Method untuk validasi & tambah barang (Pointer Receiver)
-func (inv *StoreInventory) AddProduct(name string, price float64, stock int) error {
+func (inv *StoreInventoryP) AddProduct(name string, price float64, stock int) error {
 	if name == "" {
-		return ErrEmptyName
+		return ErrEmptyNameP
 	}
 	if price < 0 || stock < 0 {
-		return ErrNegativeVal
+		return ErrNegativeValP
 	}
-	newItem := Item{Name: name, Price: price, Stock: stock}
+	newItem := ItemP{Name: name, Price: price, Stock: stock}
 	inv.Items = append(inv.Items, newItem)
 	return nil
 }
 
 // 4. Method untuk pemrosesan penjualan (Pointer Receiver)
-func (inv *StoreInventory) SellProduct(name string, qty int) (float64, error) {
+func (inv *StoreInventoryP) SellProduct(name string, qty int) (float64, error) {
 	for i, item := range inv.Items {
 		if item.Name == name {
 			if item.Stock < qty {
 				// Menggunakan Error Wrapping untuk menyisipkan info status
-				return 0, fmt.Errorf("%w Stock Tersedia: %d, Permintaan: %d", ErrInsufficient, item.Stock, qty)
+				return 0, fmt.Errorf("%w Stock Tersedia: %d, Permintaan: %d", ErrInsufficientP, item.Stock, qty)
 			}
 
 			// Kurangi stok pada backing array asli
@@ -52,11 +56,11 @@ func (inv *StoreInventory) SellProduct(name string, qty int) (float64, error) {
 		}
 	}
 	// Mengembalikan Sentinel Error
-	return 0, fmt.Errorf("%w: produk '%s'", ErrNotFound, name)
+	return 0, fmt.Errorf("%w: produk '%s'", ErrNotFoundP, name)
 }
 
 func main() {
-	store := StoreInventory{[]Item{Item{Name: "A", Price: 12.1, Stock: 10}}}
+	store := StoreInventoryP{[]ItemP{ItemP{Name: "A", Price: 12.1, Stock: 10}}}
 	fmt.Println(store)
 
 	_ = store.AddProduct("Laptop Gaming", 15_000_000.00, 5)
@@ -79,7 +83,7 @@ func main() {
 	_, errSales := store.SellProduct("Laptop Gaming", 10)
 	if errSales != nil {
 		fmt.Println("[GAGAL]", errSales)
-		if errors.Is(errSales, ErrInsufficient) {
+		if errors.Is(errSales, ErrInsufficientP) {
 			fmt.Println("Tindakan: Memicu notifikasi otomatis ke tim gudang")
 		}
 	}

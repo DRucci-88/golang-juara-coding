@@ -30,7 +30,7 @@ func main() {
 	fmt.Printf("Setelah Append: %v | Len: %d | Cap: %d\n", scores, len(scores), cap(scores))
 
 	// Membuat struct
-	product := Product3{
+	product := ProductZ{
 		Name:  "Laptop",
 		Price: 10000000,
 	}
@@ -41,68 +41,68 @@ func main() {
 	product.Display()              // Harga sekarang: 9jt
 
 	// order status
-	order := OrderStatus(Processed)
+	order := OrderStatusZ(Processed)
 	fmt.Println("Status Order:", order)
 
 	// check error
-	err := CheckInventory(0)
+	err := CheckInventoryZ(0)
 	// Pengecekan aman menggunakan errors.Is
-	if errors.Is(err, ErrStockEmpty) {
+	if errors.Is(err, ErrStockEmptyZ) {
 		fmt.Println("Gagal: Hubungi vendor untuk re-stock!")
 	}
 
 	// custom error
-	err = &PaymentError{
+	err = &PaymentErrorZ{
 		TransactionID: "TXN12345",
 		Code:          502,
 		Message:       "Gateway Timeout",
 	}
-	if payErr := new(PaymentError); errors.As(err, &payErr) {
+	if payErr := new(PaymentErrorZ); errors.As(err, &payErr) {
 		fmt.Println("Detail Error:", payErr.Message)
 		fmt.Println("Status Code:", payErr.Code)
 		fmt.Println("Ref ID:", payErr.TransactionID)
 	}
 
 	// wrap error
-	err = GetProduct()
+	err = GetProductZ()
 	fmt.Println(err) // Output: gagal memuat produk: inventory: barang tidak terdaftar
 
 	// errors.Is tetap bisa mendeteksi Sentinel Error di dalam rantai wrapping!
-	if errors.Is(err, ErrItemNotFound) {
+	if errors.Is(err, ErrItemNotFoundZ) {
 		fmt.Println("Detail: Ternyata barang memang tidak ada di database.")
 	}
 
-	SafeExecution()
+	SafeExecutionZ()
 	fmt.Println("Program tetap berjalan aman setelah pemulihan.")
 
 }
 
-type Product3 struct {
+type ProductZ struct {
 	Name  string
 	Price float64
 }
 
 // Value Receiver: Hanya membaca data
-func (p Product3) Display() {
+func (p ProductZ) Display() {
 	fmt.Printf("Produk: %s | Harga: Rp %.2f\n", p.Name, p.Price)
 }
 
 // Pointer Receiver: Mengubah nilai asli di memori
-func (p *Product3) ApplyDiscount(discount float64) {
+func (p *ProductZ) ApplyDiscount(discount float64) {
 	p.Price -= discount
 }
 
-type OrderStatus int
+type OrderStatusZ int
 
 const (
-	Pending OrderStatus = iota
-	Processed
-	Shipped
+	PendingZ OrderStatusZ = iota
+	ProcessedZ
+	ShippedZ
 )
 
 // Menambahkan method pada tipe alias int
-func (s OrderStatus) String() string {
-	return [...]string{"PENDING", "PROCESSED", "SHIPPED"}[s]
+func (s OrderStatusZ) String() string {
+	return [...]string{"PENDINGZ", "PROCESSEDZ", "SHIPPEDZ"}[s]
 }
 
 func calculatePrice(quantity int, price int) int {
@@ -111,33 +111,33 @@ func calculatePrice(quantity int, price int) int {
 }
 
 var (
-	ErrStockEmpty   = errors.New("inventory: stok barang habis")
-	ErrItemNotFound = errors.New("inventory: barang tidak terdaftar")
+	ErrStockEmptyZ   = errors.New("inventory: stok barang habis")
+	ErrItemNotFoundZ = errors.New("inventory: barang tidak terdaftar")
 )
 
-func CheckInventory(stock int) error {
+func CheckInventoryZ(stock int) error {
 	if stock == 0 {
-		return ErrStockEmpty
+		return ErrStockEmptyZ
 	}
 	return nil
 }
 
-type PaymentError struct {
+type PaymentErrorZ struct {
 	TransactionID string
 	Code          int
 	Message       string
 }
 
 // Implementasi interface error
-func (e *PaymentError) Error() string {
+func (e *PaymentErrorZ) Error() string {
 	return fmt.Sprintf("[Payment Error %d] Transaksi %s Gagal: %s", e.Code, e.TransactionID, e.Message)
 }
 
-func DatabaseQuery() error {
-	return ErrItemNotFound // Sentinel error
+func DatabaseQueryZ() error {
+	return ErrItemNotFoundZ // Sentinel error
 }
-func GetProduct() error {
-	err := DatabaseQuery()
+func GetProductZ() error {
+	err := DatabaseQueryZ()
 	if err != nil {
 		// Wrapping error dengan %w
 		return fmt.Errorf("gagal memuat produk: %w", err)
@@ -145,7 +145,7 @@ func GetProduct() error {
 	return nil
 }
 
-func SafeExecution() {
+func SafeExecutionZ() {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Sistem berhasil pulih dari panic:", r)
