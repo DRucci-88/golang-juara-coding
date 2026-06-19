@@ -1,0 +1,78 @@
+@baseUrl = http://localhost:8080
+
+### Health Check
+GET {{baseUrl}}/ping
+
+### Get All Products (v1)
+GET {{baseUrl}}/api/v1/products
+
+### Create Product (v1)
+POST {{baseUrl}}/api/v1/products
+Content-Type: application/json
+
+{
+"name": "Mechanical Keyboard",
+"price": 150000,
+"stock": 10
+}
+
+### Update Product (v1)
+PUT {{baseUrl}}/api/v1/products
+Content-Type: application/json
+
+{
+"name": "Updated Keyboard",
+"price": 200000,
+"stock": 20
+}
+
+### Delete Product (v1)
+DELETE {{baseUrl}}/api/v1/products
+
+### Search Products - Default Page
+GET {{baseUrl}}/search?keyword=keyboard
+
+### Search Products - Custom Page
+GET {{baseUrl}}/search?keyword=mouse&page=2
+
+### Get Product By ID
+GET {{baseUrl}}/products/45
+
+### Create Product (JSON Binding - Valid)
+POST {{baseUrl}}/products
+Content-Type: application/json
+
+{
+"name": "Gaming Mouse",
+"price": 350000,
+"stock": 50
+}
+
+### Create Product (Invalid - Missing Name)
+POST {{baseUrl}}/products
+Content-Type: application/json
+
+{
+"price": 350000,
+"stock": 50
+}
+
+### Create Product (Invalid - Price <= 0)
+POST {{baseUrl}}/products
+Content-Type: application/json
+
+{
+"name": "Gaming Mouse",
+"price": 0,
+"stock": 50
+}
+
+### Create Product (Invalid - Stock < 0)
+POST {{baseUrl}}/products
+Content-Type: application/json
+
+{
+"name": "Gaming Mouse",
+"price": 350000,
+"stock": -1
+}
