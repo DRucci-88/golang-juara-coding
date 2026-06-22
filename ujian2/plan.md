@@ -16,8 +16,8 @@ Membangun backend Mini HRIS menggunakan Go, Gin, dan SQLite untuk menangani data
   - Framework HTTP untuk routing, JSON response, binding request, dan validasi input.
 - `gorm.io/gorm`
   - ORM untuk query database, relasi antar tabel, dan auto migration.
-- `gorm.io/driver/sqlite`
-  - Driver SQLite untuk GORM.
+- `github.com/glebarez/sqlite`
+  - Driver SQLite non-CGO untuk GORM agar aplikasi tetap bisa berjalan saat `CGO_ENABLED=0`.
 
 ### Library/Paket Standard yang Dipakai
 - `net/http`
@@ -43,7 +43,7 @@ Membangun backend Mini HRIS menggunakan Go, Gin, dan SQLite untuk menangani data
 ### Dependensi Minimum Saat Inisialisasi Project
 - `go get github.com/gin-gonic/gin`
 - `go get gorm.io/gorm`
-- `go get gorm.io/driver/sqlite`
+- `go get github.com/glebarez/sqlite`
 
 ## Struktur Folder
 
