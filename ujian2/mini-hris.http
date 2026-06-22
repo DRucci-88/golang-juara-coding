@@ -1,0 +1,233 @@
+@baseUrl = http://localhost:8080
+
+###
+# Mini HRIS REST Client Collection
+# Jalankan server lebih dulu:
+# go run .
+#
+# File ini ditujukan untuk extension "REST Client" di VS Code.
+# Request create memakai sample data tetap. Jika dijalankan berulang
+# kali dan kena unique constraint, ubah value `code`, `nik`, atau `email`.
+
+###
+# Health Check
+GET {{baseUrl}}/health
+
+###
+# List Seeded Departments
+GET {{baseUrl}}/api/departments
+
+###
+# List Seeded Positions
+GET {{baseUrl}}/api/positions
+
+###
+# List Seeded Employees
+GET {{baseUrl}}/api/employees
+
+###
+# Create Department For Employee Flow
+# @name createDepartmentForEmployee
+POST {{baseUrl}}/api/departments
+Content-Type: application/json
+
+{
+  "name": "Operations REST",
+  "code": "DEPT-OPS-REST"
+}
+
+###
+# Create Position For Employee Flow
+# @name createPositionForEmployee
+POST {{baseUrl}}/api/positions
+Content-Type: application/json
+
+{
+  "title": "QA Engineer REST",
+  "base_salary": 7200000
+}
+
+###
+# Create Temporary Department For Update/Delete Test
+# @name createDepartmentTemp
+POST {{baseUrl}}/api/departments
+Content-Type: application/json
+
+{
+  "name": "Temporary Department REST",
+  "code": "DEPT-TMP-REST"
+}
+
+###
+# Create Temporary Position For Update/Delete Test
+# @name createPositionTemp
+POST {{baseUrl}}/api/positions
+Content-Type: application/json
+
+{
+  "title": "Temporary Position REST",
+  "base_salary": 5000000
+}
+
+###
+# Update Temporary Department
+PUT {{baseUrl}}/api/departments/{{createDepartmentTemp.response.body.$.data.id}}
+Content-Type: application/json
+
+{
+  "name": "Temporary Department REST Updated",
+  "code": "DEPT-TMP-REST-UPD"
+}
+
+###
+# Update Temporary Position
+PUT {{baseUrl}}/api/positions/{{createPositionTemp.response.body.$.data.id}}
+Content-Type: application/json
+
+{
+  "title": "Temporary Position REST Updated",
+  "base_salary": 5400000
+}
+
+###
+# Create Employee
+# @name createEmployee
+POST {{baseUrl}}/api/employees
+Content-Type: application/json
+
+{
+  "nik": "EMP-REST-001",
+  "full_name": "Budi REST Client",
+  "email": "budi.rest.client@example.com",
+  "department_id": {{createDepartmentForEmployee.response.body.$.data.id}},
+  "position_id": {{createPositionForEmployee.response.body.$.data.id}},
+  "status": "ACTIVE",
+  "leave_balance": 12
+}
+
+###
+# List Employees
+GET {{baseUrl}}/api/employees
+
+###
+# Search Employees By Name
+GET {{baseUrl}}/api/employees?search=Budi
+
+###
+# Filter Employees By Department
+GET {{baseUrl}}/api/employees?department_id={{createDepartmentForEmployee.response.body.$.data.id}}
+
+###
+# Filter Employees By Position
+GET {{baseUrl}}/api/employees?position_id={{createPositionForEmployee.response.body.$.data.id}}
+
+###
+# Filter Employees By Status
+GET {{baseUrl}}/api/employees?status=ACTIVE
+
+###
+# Update Employee
+PUT {{baseUrl}}/api/employees/{{createEmployee.response.body.$.data.id}}
+Content-Type: application/json
+
+{
+  "nik": "EMP-REST-001",
+  "full_name": "Budi REST Client Updated",
+  "email": "budi.rest.updated@example.com",
+  "department_id": {{createDepartmentForEmployee.response.body.$.data.id}},
+  "position_id": {{createPositionForEmployee.response.body.$.data.id}},
+  "status": "ACTIVE",
+  "leave_balance": 15
+}
+
+###
+# Create Attendance - Present
+POST {{baseUrl}}/api/attendances
+Content-Type: application/json
+
+{
+  "employee_id": {{createEmployee.response.body.$.data.id}},
+  "date": "2026-06-02",
+  "check_in": "08:00",
+  "check_out": "17:00",
+  "status": "PRESENT"
+}
+
+###
+# Create Attendance - Late
+POST {{baseUrl}}/api/attendances
+Content-Type: application/json
+
+{
+  "employee_id": {{createEmployee.response.body.$.data.id}},
+  "date": "2026-06-03",
+  "check_in": "08:30",
+  "check_out": "17:00",
+  "status": "LATE"
+}
+
+###
+# Create Attendance - Absent
+POST {{baseUrl}}/api/attendances
+Content-Type: application/json
+
+{
+  "employee_id": {{createEmployee.response.body.$.data.id}},
+  "date": "2026-06-04",
+  "check_in": "09:00",
+  "check_out": "09:00",
+  "status": "ABSENT"
+}
+
+###
+# Create Leave
+# @name createLeave
+POST {{baseUrl}}/api/leaves
+Content-Type: application/json
+
+{
+  "employee_id": {{createEmployee.response.body.$.data.id}},
+  "start_date": "2026-06-10",
+  "end_date": "2026-06-11",
+  "reason": "Family event"
+}
+
+###
+# Approve Leave
+PATCH {{baseUrl}}/api/leaves/{{createLeave.response.body.$.data.id}}/approve
+Content-Type: application/json
+
+{
+  "status": "APPROVED"
+}
+
+###
+# Calculate Salary For One Employee
+POST {{baseUrl}}/api/salaries/calculate
+Content-Type: application/json
+
+{
+  "period": "2026-06",
+  "employee_id": {{createEmployee.response.body.$.data.id}}
+}
+
+###
+# Calculate Salary For All Active Employees
+POST {{baseUrl}}/api/salaries/calculate
+Content-Type: application/json
+
+{
+  "period": "2026-06"
+}
+
+###
+# List Salaries By Period
+GET {{baseUrl}}/api/salaries/period/2026-06
+
+###
+# Delete Temporary Department
+DELETE {{baseUrl}}/api/departments/{{createDepartmentTemp.response.body.$.data.id}}
+
+###
+# Delete Temporary Position
+DELETE {{baseUrl}}/api/positions/{{createPositionTemp.response.body.$.data.id}}
