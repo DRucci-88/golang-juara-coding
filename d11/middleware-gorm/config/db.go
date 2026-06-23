@@ -1,0 +1,79 @@
+package config
+
+import (
+	"log"
+	"time"
+
+	"materi-middleware-gorm/models"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+)
+
+var DB *gorm.DB
+
+func InitDB() {
+	var err error
+	dsn := "postgres://postgres:secret45@localhost:5434/eticketdb?sslmode=disable"
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal("failed to connect database: ", err)
+	}
+
+	// auto migrate
+	err = DB.AutoMigrate(&models.Concert{}, &models.TicketCategory{})
+	if err != nil {
+		log.Fatal("failed to migrate database: ", err)
+	}
+
+	log.Println("Database connected and migrated successfully")
+
+	// seeder 5 data awal
+	var count int64
+	DB.Model(&models.Concert{}).Count(&count)
+	if count == 0 {
+		initialConcerts := []models.Concert{
+			{
+				Title:       "Coldplay Music of the Spheres World Tour Jakarta",
+				Description: "Konser perdana band asal Inggris, Coldplay, di Indonesia yang memukau ratusan ribu penonton dengan gelang Xyloband yang menyala warna-warni.",
+				Date:        time.Date(2023, 11, 15, 20, 0, 0, 0, time.UTC),
+				Venue:       "Stadion Utama Gelora Bung Karno (SUGBK), Jakarta",
+				Status:      "completed",
+			},
+			{
+				Title:       "Blackpink [Born Pink] World Tour Jakarta",
+				Description: "Konser megah dari girlgroup K-Pop fenomenal, Blackpink, yang berhasil meremajakan Jakarta menjadi lautan cahaya merah muda selama dua hari berturut-turut.",
+				Date:        time.Date(2023, 3, 11, 19, 0, 0, 0, time.UTC),
+				Venue:       "Stadion Utama Gelora Bung Karno (SUGBK), Jakarta",
+				Status:      "completed",
+			},
+			{
+				Title:       "Metallica Live in Jakarta 2013",
+				Description: "Konser sejarah kembalinya raja thrash metal dunia ke Indonesia setelah penantian 20 tahun, dihadiri oleh puluhan ribu pecinta musik cadas dari berbagai generasi.",
+				Date:        time.Date(2013, 8, 25, 20, 0, 0, 0, time.UTC),
+				Venue:       "Stadion Utama Gelora Bung Karno (SUGBK), Jakarta",
+				Status:      "completed",
+			},
+			{
+				Title:       "Bruno Mars Live in Jakarta 2026",
+				Description: "Konser tur dunia dari solois legendaris Bruno Mars yang membawakan deretan lagu hitsnya dengan koreografi dan vokal yang sangat enerjik.",
+				Date:        time.Date(2026, 6, 22, 20, 0, 0, 0, time.UTC),
+				Venue:       "Jakarta International Stadium (JIS), Jakarta",
+				Status:      "active",
+			},
+			{
+				Title:       "Pesta Rakyat Dewa 19 - 30 Tahun Berkarya",
+				Description: "Konser selebrasi 3 dekade salah satu band rock terbesar di Indonesia, Dewa 19, yang memboyong 4 vokalis dan 5 drummer dalam satu panggung.",
+				Date:        time.Date(2026, 6, 22, 19, 30, 0, 0, time.UTC),
+				Venue:       "Stadion Utama Gelora Bung Karno (SUGBK), Jakarta",
+				Status:      "active",
+			},
+		}
+
+		if err := DB.Create(&initialConcerts).Error; err != nil {
+			log.Println("failed to seed initial concerts: ", err)
+		} else {
+			log.Println("Database successfully seeded with 5 initial concerts")
+		}
+	}
+}
