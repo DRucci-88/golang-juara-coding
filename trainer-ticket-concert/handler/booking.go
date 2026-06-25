@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"materi-middleware-gorm/dto"
-	"materi-middleware-gorm/service"
+	"trainer-ticket-concert/dto"
+	"trainer-ticket-concert/service"
 
 	"github.com/gin-gonic/gin"
 )

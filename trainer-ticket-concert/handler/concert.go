@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"time"
 
-	"materi-middleware-gorm/dto"
-	"materi-middleware-gorm/models"
-	"materi-middleware-gorm/service"
+	"trainer-ticket-concert/dto"
+	"trainer-ticket-concert/models"
+	"trainer-ticket-concert/service"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

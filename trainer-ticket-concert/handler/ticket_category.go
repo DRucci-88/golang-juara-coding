@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"materi-middleware-gorm/models"
-	"materi-middleware-gorm/service"
+	"trainer-ticket-concert/models"
+	"trainer-ticket-concert/service"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

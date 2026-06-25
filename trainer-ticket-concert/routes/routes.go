@@ -1,10 +1,10 @@
 package routes
 
 import (
-	"materi-middleware-gorm/handler"
-	"materi-middleware-gorm/middleware"
-	"materi-middleware-gorm/repository"
-	"materi-middleware-gorm/service"
+	"trainer-ticket-concert/handler"
+	"trainer-ticket-concert/middleware"
+	"trainer-ticket-concert/repository"
+	"trainer-ticket-concert/service"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

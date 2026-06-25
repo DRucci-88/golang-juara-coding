@@ -2,9 +2,9 @@ package main
 
 import (
 	"log"
-	"materi-middleware-gorm/config"
-	"materi-middleware-gorm/routes"
 	"time"
+	"trainer-ticket-concert/config"
+	"trainer-ticket-concert/routes"
 
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"

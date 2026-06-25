@@ -3,10 +3,10 @@ package service
 import (
 	"errors"
 	"fmt"
-	"materi-middleware-gorm/dto"
-	"materi-middleware-gorm/models"
-	"materi-middleware-gorm/repository"
 	"time"
+	"trainer-ticket-concert/dto"
+	"trainer-ticket-concert/models"
+	"trainer-ticket-concert/repository"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"

@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"materi-middleware-gorm/models"
+	"trainer-ticket-concert/models"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -14,7 +14,7 @@ var DB *gorm.DB
 
 func InitDB() {
 	var err error
-	dsn := "postgres://postgres:secret45@localhost:5434/eticketdb?sslmode=disable"
+	dsn := "postgres://postgres:12345678@localhost:5434/ticket_concert?sslmode=disable"
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("failed to connect database: ", err)

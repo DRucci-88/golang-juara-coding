@@ -1,8 +1,8 @@
 package service
 
 import (
-	"materi-middleware-gorm/models"
-	"materi-middleware-gorm/repository"
+	"trainer-ticket-concert/models"
+	"trainer-ticket-concert/repository"
 )
 
 type TicketCategoryService interface {

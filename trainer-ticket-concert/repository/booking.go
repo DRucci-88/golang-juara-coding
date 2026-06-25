@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"materi-middleware-gorm/models"
+	"trainer-ticket-concert/models"
 
 	"gorm.io/gorm"
 )
