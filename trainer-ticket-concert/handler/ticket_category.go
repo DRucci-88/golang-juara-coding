@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"trainer-ticket-concert/models"
-	"trainer-ticket-concert/service"
+	"go-tiket-konser/models"
+	"go-tiket-konser/service"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

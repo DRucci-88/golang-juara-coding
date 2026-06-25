@@ -1,10 +1,10 @@
 package routes
 
 import (
-	"trainer-ticket-concert/handler"
-	"trainer-ticket-concert/middleware"
-	"trainer-ticket-concert/repository"
-	"trainer-ticket-concert/service"
+	"go-tiket-konser/handler"
+	"go-tiket-konser/middleware"
+	"go-tiket-konser/repository"
+	"go-tiket-konser/service"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -26,15 +26,25 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	ticketCategoryService := service.NewTicketCategoryService(ticketCategoryRepo, concertRepo)
 	ticketCategoryHandler := handler.NewTicketCategoryHandler(ticketCategoryService)
 
-	// Inisialisasi Lapisan Booking
+	// Inisialisasi layer Booking
 	customerRepo := repository.NewCustomerRepository(db)
 	bookingRepo := repository.NewBookingRepository(db)
 	bookingService := service.NewBookingService(db, bookingRepo, customerRepo)
 	bookingHandler := handler.NewBookingHandler(bookingService)
 
+	// inisialisasi layer authentication
+	userRepo := repository.NewUserRepository(db)
+	blacklistedTokenRepo := repository.NewBlacklistedTokenRepository(db)
+	authService := service.NewAuthService(userRepo, blacklistedTokenRepo)
+	authHandler := handler.NewAuthHandler(authService)
+
 	// Group routes
 	api := r.Group("/api/v1")
 	{
+		// Auth routes
+		api.POST("/register", authHandler.Register)
+		api.POST("/login", authHandler.Login)
+
 		// Concerts routes
 		api.POST("/concerts", concertHandler.CreateConcert)
 		api.GET("/concerts", concertHandler.GetConcerts)
@@ -52,6 +62,14 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		// Booking routes
 		api.POST("/bookings", bookingHandler.CreateBooking)
 		api.GET("/bookings/:id", bookingHandler.GetBookingByID)
+
+		// Protected routes (JWT)
+		protected := api.Group("")
+		protected.Use(middleware.JWTAuth(blacklistedTokenRepo))
+		{
+			protected.POST("/logout", authHandler.Logout)
+			protected.GET("/profile", authHandler.GetProfile)
+		}
 	}
 
 	return r

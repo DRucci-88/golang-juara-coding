@@ -3,10 +3,10 @@ package service
 import (
 	"errors"
 	"fmt"
+	"go-tiket-konser/dto"
+	"go-tiket-konser/models"
+	"go-tiket-konser/repository"
 	"time"
-	"trainer-ticket-concert/dto"
-	"trainer-ticket-concert/models"
-	"trainer-ticket-concert/repository"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"

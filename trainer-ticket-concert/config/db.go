@@ -4,8 +4,9 @@ import (
 	"log"
 	"time"
 
-	"trainer-ticket-concert/models"
+	"go-tiket-konser/models"
 
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -14,14 +15,15 @@ var DB *gorm.DB
 
 func InitDB() {
 	var err error
-	dsn := "postgres://postgres:12345678@localhost:5434/ticket_concert?sslmode=disable"
+	dsn := "postgres://postgres:secret45@localhost:5434/eticketdb?sslmode=disable"
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("failed to connect database: ", err)
 	}
 
 	// auto migrate
-	err = DB.AutoMigrate(&models.Concert{}, &models.TicketCategory{}, &models.Customer{}, &models.Booking{}, &models.BookingDetail{})
+	err = DB.AutoMigrate(&models.Concert{}, &models.TicketCategory{}, &models.Customer{},
+		&models.Booking{}, &models.BookingDetail{}, &models.User{}, &models.BlacklistedToken{})
 	if err != nil {
 		log.Fatal("failed to migrate database: ", err)
 	}
@@ -114,7 +116,7 @@ func InitDB() {
 			{
 				Name:           "Silver",
 				Price:          500000,
-				ConcertID:      41,
+				ConcertID:      4,
 				TotalQuota:     200,
 				AvailableQuota: 150,
 			},
@@ -124,6 +126,28 @@ func InitDB() {
 			log.Println("failed to seed initial ticket categories: ", err)
 		} else {
 			log.Println("Database successfully seeded with 2 initial ticket categories")
+		}
+	}
+
+	// seeder admin user
+	var userCount int64
+	DB.Model(&models.User{}).Where("role = ?", "admin").Count(&userCount)
+	if userCount == 0 {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte("Indonesia"), bcrypt.DefaultCost)
+		if err != nil {
+			log.Println("failed to hash admin password: ", err)
+		} else {
+			adminUser := models.User{
+				FullName: "Admin Konser",
+				Email:    "adminkonser@gmail.com",
+				Password: string(hashedPassword),
+				Role:     "admin",
+			}
+			if err := DB.Create(&adminUser).Error; err != nil {
+				log.Println("failed to seed admin user: ", err)
+			} else {
+				log.Println("Database successfully seeded with admin user")
+			}
 		}
 	}
 }

@@ -1,8 +1,8 @@
 package service
 
 import (
-	"trainer-ticket-concert/models"
-	"trainer-ticket-concert/repository"
+	"go-tiket-konser/models"
+	"go-tiket-konser/repository"
 )
 
 type ConcertService interface {

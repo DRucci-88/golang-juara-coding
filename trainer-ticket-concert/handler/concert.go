@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"time"
 
-	"trainer-ticket-concert/dto"
-	"trainer-ticket-concert/models"
-	"trainer-ticket-concert/service"
+	"go-tiket-konser/dto"
+	"go-tiket-konser/models"
+	"go-tiket-konser/service"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

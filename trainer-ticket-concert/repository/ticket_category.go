@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"trainer-ticket-concert/models"
+	"go-tiket-konser/models"
 
 	"gorm.io/gorm"
 )

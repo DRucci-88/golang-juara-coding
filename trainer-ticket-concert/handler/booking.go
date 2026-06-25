@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"trainer-ticket-concert/dto"
-	"trainer-ticket-concert/service"
+	"go-tiket-konser/dto"
+	"go-tiket-konser/service"
 
 	"github.com/gin-gonic/gin"
 )
