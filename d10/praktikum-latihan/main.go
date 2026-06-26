@@ -20,6 +20,8 @@ func main() {
 	// Route Group dengan Proteksi Middleware
 	v1 := r.Group("/api/v1")
 	v1.Use(middleware.ApiKeyAuth())
+	r.Use(middleware.RateLimiter(5))
+
 	v1.GET("/products", func(c *gin.Context) {
 		var list []model.Product
 		search := c.Query("search")
