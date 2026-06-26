@@ -26,3 +26,17 @@ Content-Type: : application/json
     ],
     "payment_method": "CASH"
 }
+
+### CREATE checkout failed
+POST {{baseUrl}}/api/checkout HTTP/1.1
+Content-Type: : application/json
+
+{
+    "customer_name": "Rucci",
+    "items": [
+        {"product_id": 1,"quantity": 10},
+        {"product_id": 2,"quantity1": 20},
+        {"product_id": 3,"quantity": 10}
+    ],
+    "payment_method": "CASHAAA"
+}
