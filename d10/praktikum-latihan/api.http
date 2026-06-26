@@ -1,0 +1,56 @@
+@baseUrl = http://localhost:8080
+
+### READ Categories
+GET {{baseUrl}}/api/v1/categories/1/products HTTP/1.1
+X-API-KEY: RAHASIA_NEGARA
+
+### READ ALL Products
+GET {{baseUrl}}/api/v1/products HTTP/1.1
+X-API-KEY: RAHASIA_NEGARA
+
+### READ Product By ID
+GET {{baseUrl}}/api/v1/products/21 HTTP/1.1
+X-API-KEY: RAHASIA_NEGARA
+
+### Create Product Success
+POST {{baseUrl}}/api/v1/products HTTP/1.1
+X-API-KEY: RAHASIA_NEGARA
+Content-Type: : application/json
+
+{
+    "category_id": 1,
+    "sku": "SKU-21",
+    "name": "Name-21",
+    "price": 23000.00,
+    "stock": 37
+}
+
+### Create Product Failed - category_id not exist
+POST {{baseUrl}}/api/v1/products HTTP/1.1
+X-API-KEY: RAHASIA_NEGARA
+Content-Type: : application/json
+
+{
+    "category_id": 1000,
+    "sku": "SKU-22",
+    "name": "Name-22",
+    "price": 57000.00,
+    "stock": 37
+}
+
+### Update Product Success - all
+PUT {{baseUrl}}/api/v1/products/1 HTTP/1.1
+X-API-KEY: RAHASIA_NEGARA
+Content-Type: : application/json
+
+{
+    "category_id": 3,
+    "sku":   "SKU-000",
+    "name":  "Name-000",
+    "price": 90300.00,
+    "stock": 10
+}
+
+### Delete Product Success
+DELETE {{baseUrl}}/api/v1/products/1 HTTP/1.1
+X-API-KEY: RAHASIA_NEGARA

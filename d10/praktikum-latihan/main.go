@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"praktikum/app"
 	"praktikum/middleware"
@@ -20,7 +21,7 @@ func main() {
 	// Route Group dengan Proteksi Middleware
 	v1 := r.Group("/api/v1")
 	v1.Use(middleware.ApiKeyAuth())
-	r.Use(middleware.RateLimiter(5))
+	// r.Use(middleware.RateLimiter(5))
 
 	v1.GET("/products", func(c *gin.Context) {
 		var list []model.Product
@@ -44,7 +45,7 @@ func main() {
 		id, _ := strconv.Atoi(c.Param("id"))
 
 		var p model.Product
-		if err := db.First(&p, id).Error; err != nil {
+		if err := db.Preload("Category").First(&p, id).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				c.JSON(http.StatusNotFound, gin.H{"error": "Produk tidak ditemukan"})
 				return
@@ -64,7 +65,7 @@ func main() {
 
 		if err := db.Create(&req).Error; err != nil {
 			c.JSON(http.StatusConflict, gin.H{
-				"error": "Failed Create Product, SKU Duplicated",
+				"error": err.Error(),
 			})
 			return
 		}
@@ -76,8 +77,9 @@ func main() {
 	})
 
 	v1.PUT("/products/:id", func(c *gin.Context) {
-		id, _ := strconv.Atoi(c.Param("id"))
 
+		id, _ := strconv.Atoi(c.Param("id"))
+		log.Println("Update Product By Id ", id)
 		var p model.Product
 
 		if err := db.First(&p, id).Error; err != nil {
@@ -87,9 +89,11 @@ func main() {
 				})
 				return
 			}
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		}
+
+		log.Printf("p %+v", p)
 
 		var req model.Product
 		if err := c.ShouldBindJSON(&req); err != nil {
@@ -97,14 +101,18 @@ func main() {
 			return
 		}
 
-		updateData := gin.H{
-			"sku":   req.SKU,
-			"name":  req.Name,
-			"price": req.Price,
-			"stock": req.Stock,
+		log.Printf("req %+v", req)
+
+		updateData := map[string]any{
+			"category_id": req.CategoryID,
+			"sku":         req.SKU,
+			"name":        req.Name,
+			"price":       req.Price,
+			"stock":       req.Stock,
 		}
 
 		if err := db.Model(&p).Updates(updateData).Error; err != nil {
+			log.Println(err.Error())
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
@@ -115,7 +123,6 @@ func main() {
 		})
 	})
 
-	// DELETE /api/v1/products/:id - Soft Delete Produk
 	v1.DELETE("/products/:id", func(c *gin.Context) {
 		id, _ := strconv.Atoi(c.Param("id"))
 		var p model.Product
@@ -133,6 +140,30 @@ func main() {
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"message": "Produk berhasil dihapus secara lunak (Soft Deleted)"})
+	})
+
+	v1.GET("/categories/:id/products", func(c *gin.Context) {
+		id, _ := strconv.Atoi(c.Param("id"))
+
+		var category model.Category
+		if err := db.First(&category, id).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				c.JSON(http.StatusNotFound, gin.H{"error": "Category tidak ditemukan"})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		var list []model.Product
+
+		if err := db.Preload("Category").Find(&list).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"data": list})
 	})
 
 	r.Run(":8080")

@@ -7,7 +7,11 @@ import (
 )
 
 type Product struct {
-	ID        uint           `gorm:"primaryKey;autoIncrement" json:"id"`
+	ID uint `gorm:"primaryKey;autoIncrement" json:"id"`
+
+	CategoryID uint     `gorm:"not null" binding:"required" json:"category_id"`
+	Category   Category `gorm:"foreignKey:CategoryID;references:ID" json:"category,omitzero"`
+
 	SKU       string         `gorm:"type:varchar(50);uniqueIndex;not null" json:"sku" binding:"required"`
 	Name      string         `gorm:"type:varchar(100);not null" json:"name" binding:"required"`
 	Price     float64        `gorm:"type:numeric(12,2);not null" json:"price" binding:"required,gt=0"`
