@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 )
 
 var categories = []model.Category{
@@ -17,8 +19,18 @@ var categories = []model.Category{
 
 var nextID = 4
 
+func NoSpaceValidator(fl validator.FieldLevel) bool {
+	value := fl.Field().String()
+
+	return !strings.Contains(value, " ")
+}
+
 func main() {
 	r := gin.Default()
+
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		v.RegisterValidation("nospace", NoSpaceValidator)
+	}
 
 	api := r.Group("/api")
 	{
@@ -32,10 +44,10 @@ func main() {
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
-			if strings.Contains(category.Code, " ") {
-				ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": "Code cannot contains space"})
-				return
-			}
+			// if strings.Contains(category.Code, " ") {
+			// 	ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": "Code cannot contains space"})
+			// 	return
+			// }
 			category.ID = nextID
 			nextID++
 			categories = append(categories, category)

@@ -12,13 +12,21 @@ Content-Type: : application/json
     "code": "CAT-10"
 }
 
-### CREATE failed
+### CREATE failed - with space
 POST {{baseUrl}}/api/categories HTTP/1.1
 Content-Type: : application/json
 
 {
     "name": "Yellow",
     "code": "CAT 10"
+}
+
+### CREATE failed - no code
+POST {{baseUrl}}/api/categories HTTP/1.1
+Content-Type: : application/json
+
+{
+    "name": "Yellow"
 }
 
 ### READ by code success
