@@ -1,0 +1,28 @@
+@baseUrl = http://localhost:8080
+
+### READ all
+GET {{baseUrl}}/api/categories HTTP/1.1
+
+### CREATE success
+POST {{baseUrl}}/api/categories HTTP/1.1
+Content-Type: : application/json
+
+{
+    "name": "Yellow",
+    "code": "CAT-10"
+}
+
+### CREATE failed
+POST {{baseUrl}}/api/categories HTTP/1.1
+Content-Type: : application/json
+
+{
+    "name": "Yellow",
+    "code": "CAT 10"
+}
+
+### READ by code success
+GET {{baseUrl}}/api/categories/CAT-1 HTTP/1.1
+
+### READ by code failed
+GET {{baseUrl}}/api/categories/CAT-10 HTTP/1.1
