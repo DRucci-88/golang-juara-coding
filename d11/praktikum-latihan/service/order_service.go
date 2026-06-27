@@ -2,9 +2,11 @@ package service
 
 import (
 	"fmt"
+	"log"
 	"praktikum/dto"
 	"praktikum/model"
 	"praktikum/repository"
+	"runtime/debug"
 	"time"
 
 	"gorm.io/gorm"
@@ -43,12 +45,15 @@ func NewOrderService(
 func (s *orderServiceImpl) Create(req *dto.CheckoutRequest) (*model.Order, error) {
 
 	var order model.Order
+	log.Println(req)
 
 	// Transactional Database otomatis
 	errTx := s.db.Transaction(func(tx *gorm.DB) error {
 		// Validati keberadaan user
 		user, errUser := s.userRepo.FindById(tx, req.UserID)
 		if errUser != nil {
+			log.Println(errUser)
+			debug.PrintStack()
 			// return fmt.Errorf("User with ID [%d] not found", req.UserID)
 			return errUser
 		}
@@ -69,6 +74,8 @@ func (s *orderServiceImpl) Create(req *dto.CheckoutRequest) (*model.Order, error
 		}
 
 		if err := s.orderRepo.Create(tx, &order); err != nil {
+			log.Println(err)
+			debug.PrintStack()
 			return err
 		}
 
@@ -80,6 +87,8 @@ func (s *orderServiceImpl) Create(req *dto.CheckoutRequest) (*model.Order, error
 				item.ProductID,
 			)
 			if errLock != nil {
+				log.Println(errLock)
+				debug.PrintStack()
 				return errLock
 			}
 
@@ -91,6 +100,8 @@ func (s *orderServiceImpl) Create(req *dto.CheckoutRequest) (*model.Order, error
 			// Update stock produck
 			product.Stock = product.Stock - item.Quantity
 			if err := s.productRepo.Update(tx, product); err != nil {
+				log.Println(err)
+				debug.PrintStack()
 				return err
 			}
 
@@ -106,6 +117,8 @@ func (s *orderServiceImpl) Create(req *dto.CheckoutRequest) (*model.Order, error
 			}
 
 			if err := s.orderItemRepo.Create(tx, &orderItem); err != nil {
+				log.Println(err)
+				debug.PrintStack()
 				return err
 			}
 
@@ -118,6 +131,8 @@ func (s *orderServiceImpl) Create(req *dto.CheckoutRequest) (*model.Order, error
 		order.Items = orderItems
 
 		if err := s.orderRepo.Update(tx, &order); err != nil {
+			log.Println(err)
+			debug.PrintStack()
 			return err
 		}
 

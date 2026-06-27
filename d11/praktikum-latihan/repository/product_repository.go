@@ -19,10 +19,10 @@ func NewProductRepository() ProductRepository {
 }
 
 func (r *productRepositoryImpl) FindByID(tx *gorm.DB, id uint) (*model.Product, error) {
-	var product *model.Product
-	err := tx.First(product, id).Error
+	var product model.Product
+	err := tx.First(&product, id).Error
 
-	return product, err
+	return &product, err
 }
 
 func (r *productRepositoryImpl) Update(tx *gorm.DB, product *model.Product) error {

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 	"praktikum/dto"
 	"praktikum/service"
@@ -28,7 +29,7 @@ func (h *orderHandlerImpl) Create(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}
-
+	log.Printf("%+v", input)
 	order, err := h.orderService.Create(&input)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
