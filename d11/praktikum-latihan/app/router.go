@@ -17,6 +17,7 @@ func NewRouter(
 
 	api := r.Group("/api/v1")
 	api.POST("/orders", orderHanler.Create)
+	api.GET("/orders/:id", orderHanler.FindByID)
 
 	return r
 }

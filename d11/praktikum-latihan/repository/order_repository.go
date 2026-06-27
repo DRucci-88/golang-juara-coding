@@ -8,7 +8,7 @@ import (
 
 type OrderRepository interface {
 	Create(tx *gorm.DB, order *model.Order) error
-	FindByID(tx *gorm.DB, id uint) (*model.Order, error)
+	FindByID(tx *gorm.DB, id uint, preloads ...string) (*model.Order, error)
 	Update(tx *gorm.DB, order *model.Order) error
 }
 
@@ -23,8 +23,13 @@ func (r *orderRepositoryImpl) Create(tx *gorm.DB, order *model.Order) error {
 	return tx.Create(order).Error
 }
 
-func (r *orderRepositoryImpl) FindByID(tx *gorm.DB, id uint) (*model.Order, error) {
+func (r *orderRepositoryImpl) FindByID(tx *gorm.DB, id uint, preloads ...string) (*model.Order, error) {
 	var order model.Order
+
+	for _, preload := range preloads {
+		tx = tx.Preload(preload)
+	}
+
 	err := tx.First(&order, id).Error
 	return &order, err
 }
@@ -32,3 +37,13 @@ func (r *orderRepositoryImpl) FindByID(tx *gorm.DB, id uint) (*model.Order, erro
 func (r *orderRepositoryImpl) Update(tx *gorm.DB, order *model.Order) error {
 	return tx.Save(order).Error
 }
+
+// func (r *orderRepositoryImpl) FindByIDPreload(tx *gorm.DB, id uint, preloads ...string) (*model.Order, error) {
+// 	var order model.Order
+// 	err := tx.
+// 		Preload("User").
+// 		Preload("Items.Product").
+// 		First(&order, id).Error
+
+// 	return &order, err
+// }

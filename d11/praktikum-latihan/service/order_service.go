@@ -15,6 +15,7 @@ import (
 
 type OrderService interface {
 	Create(req *dto.CheckoutRequest) (*model.Order, error)
+	FindById(id int) (*model.Order, error)
 }
 
 type orderServiceImpl struct {
@@ -140,4 +141,10 @@ func (s *orderServiceImpl) Create(req *dto.CheckoutRequest) (*model.Order, error
 	})
 
 	return &order, errTx
+}
+
+func (s *orderServiceImpl) FindById(id int) (*model.Order, error) {
+
+	return s.orderRepo.FindByID(s.db, uint(id), "User", "Items.Product")
+
 }

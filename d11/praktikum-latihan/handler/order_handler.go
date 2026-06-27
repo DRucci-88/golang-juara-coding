@@ -1,16 +1,20 @@
 package handler
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"praktikum/dto"
 	"praktikum/service"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type OrderHandler interface {
 	Create(c *gin.Context)
+	FindByID(c *gin.Context)
 }
 
 type orderHandlerImpl struct {
@@ -40,4 +44,26 @@ func (h *orderHandlerImpl) Create(c *gin.Context) {
 		"data":    order,
 	})
 
+}
+
+func (h *orderHandlerImpl) FindByID(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": "ID param is not a number"})
+		return
+	}
+
+	order, err := h.orderService.FindById(id)
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Faktur pesananan tidak ditemukan "})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": order})
 }
