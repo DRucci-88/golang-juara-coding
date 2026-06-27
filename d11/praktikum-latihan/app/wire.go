@@ -20,9 +20,11 @@ func InitializedServer() *gin.Engine {
 
 		// Handler
 		handler.NewOrderHandler,
+		handler.NewAnaliticsHandler,
 
 		// Service
 		service.NewOrderService,
+		service.NewOrderItemService,
 
 		// Repository
 		repository.NewOrderRepository,

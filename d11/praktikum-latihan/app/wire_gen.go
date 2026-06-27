@@ -23,6 +23,8 @@ func InitializedServer() *gin.Engine {
 	orderItemRepository := repository.NewOrderItemRepository()
 	orderService := service.NewOrderService(db, orderRepository, userRepository, productRepository, orderItemRepository)
 	orderHandler := handler.NewOrderHandler(orderService)
-	engine := NewRouter(orderHandler)
+	orderItemService := service.NewOrderItemService(db, orderItemRepository)
+	analyticsHandler := handler.NewAnaliticsHandler(orderItemService)
+	engine := NewRouter(orderHandler, analyticsHandler)
 	return engine
 }
