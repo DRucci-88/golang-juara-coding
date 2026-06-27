@@ -16,6 +16,7 @@ import (
 type OrderService interface {
 	Create(req *dto.CheckoutRequest) (*model.Order, error)
 	FindById(id int) (*model.Order, error)
+	Cancel(id int) (*model.Order, error)
 }
 
 type orderServiceImpl struct {
@@ -144,7 +145,39 @@ func (s *orderServiceImpl) Create(req *dto.CheckoutRequest) (*model.Order, error
 }
 
 func (s *orderServiceImpl) FindById(id int) (*model.Order, error) {
-
 	return s.orderRepo.FindByID(s.db, uint(id), "User", "Items.Product")
+}
+
+func (s *orderServiceImpl) Cancel(id int) (*model.Order, error) {
+	order, err := s.orderRepo.FindByID(s.db, uint(id), "Items.Product")
+
+	if err != nil {
+		return nil, err
+	}
+
+	if order.Status == "CANCELLED" {
+		return nil, fmt.Errorf("This Order with ID [%d] already CANCELLED", order.ID)
+	}
+	errTx := s.db.Transaction(func(tx *gorm.DB) error {
+		for _, orderItem := range order.Items {
+			product, err := s.productRepo.FindByID(tx, orderItem.ProductID)
+			if err != nil {
+				return err
+			}
+
+			product.Stock += orderItem.Quantity
+			if err := s.productRepo.Update(tx, product); err != nil {
+				return err
+			}
+		}
+
+		order.Status = "CANCELLED"
+		if err := s.orderRepo.Update(tx, order); err != nil {
+			return err
+		}
+		return nil
+	})
+
+	return order, errTx
 
 }

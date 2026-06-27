@@ -15,6 +15,7 @@ import (
 type OrderHandler interface {
 	Create(c *gin.Context)
 	FindByID(c *gin.Context)
+	Cancel(c *gin.Context)
 }
 
 type orderHandlerImpl struct {
@@ -66,4 +67,22 @@ func (h *orderHandlerImpl) FindByID(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": order})
+}
+
+func (h *orderHandlerImpl) Cancel(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": "ID param is not a number"})
+		return
+	}
+
+	order, err := h.orderService.Cancel(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": order})
+
 }
