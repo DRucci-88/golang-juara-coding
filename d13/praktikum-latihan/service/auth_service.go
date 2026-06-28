@@ -14,20 +14,24 @@ type AuthService interface {
 	Register(req *dto.RegisterRequest) (*model.User, error)
 	Login(req *dto.LoginRequest) (string, error)
 	Me(authContext *dto.AuthContext) (*model.User, error)
+	Logout(authContext *dto.AuthContext) error
 }
 
 type authServiceImpl struct {
-	db       *gorm.DB
-	userRepo repository.UserRepository
+	db                   *gorm.DB
+	userRepo             repository.UserRepository
+	blackListedTokenRepo repository.BlackListedTokenRepository
 }
 
 func NewAuthService(
 	db *gorm.DB,
 	userRepo repository.UserRepository,
+	blackListedTokenRepo repository.BlackListedTokenRepository,
 ) AuthService {
 	return &authServiceImpl{
-		db:       db,
-		userRepo: userRepo,
+		db:                   db,
+		userRepo:             userRepo,
+		blackListedTokenRepo: blackListedTokenRepo,
 	}
 }
 
@@ -88,4 +92,12 @@ func (s *authServiceImpl) Login(req *dto.LoginRequest) (string, error) {
 
 func (s *authServiceImpl) Me(authContext *dto.AuthContext) (*model.User, error) {
 	return s.userRepo.FindById(s.db, authContext.UserID)
+}
+
+func (s *authServiceImpl) Logout(authContext *dto.AuthContext) error {
+	blacklistedToken := &model.BlackListedToken{
+		TokenString: authContext.Token,
+		ExpireAt:    authContext.TokenExpiresAt,
+	}
+	return s.blackListedTokenRepo.Create(blacklistedToken)
 }

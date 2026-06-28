@@ -7,20 +7,20 @@
 package app
 
 import (
-	"github.com/gin-gonic/gin"
 	"praktikum/handler"
 	"praktikum/repository"
 	"praktikum/service"
+	"praktikum/worker"
 )
 
 // Injectors from wire.go:
 
-func InitializedServer() *gin.Engine {
+func InitializedApplication() *Application {
 	db := NewDatabase()
 	blackListedTokenRepository := repository.NewBlackListedTokenRepository(db)
 	groupMiddleware := NewGroupMiddleware(blackListedTokenRepository)
 	userRepository := repository.NewUserRepository()
-	authService := service.NewAuthService(db, userRepository)
+	authService := service.NewAuthService(db, userRepository, blackListedTokenRepository)
 	authHandler := handler.NewAuthHandler(authService)
 	orderRepository := repository.NewOrderRepository()
 	productRepository := repository.NewProductRepository()
@@ -30,5 +30,7 @@ func InitializedServer() *gin.Engine {
 	orderItemService := service.NewOrderItemService(db, orderItemRepository)
 	analyticsHandler := handler.NewAnaliticsHandler(orderItemService)
 	engine := NewRouter(groupMiddleware, authHandler, orderHandler, analyticsHandler)
-	return engine
+	tokenCleanupWorker := worker.NewTokenCleanupWorker(db, blackListedTokenRepository)
+	application := NewApplication(engine, tokenCleanupWorker)
+	return application
 }

@@ -30,6 +30,6 @@ func NewRouter(
 	authApi.POST("/login", authHandler.Login)
 	authApi.GET("/me-admin", m.JWT, middleware.RequiredRoleMiddleware("ADMIN"), authHandler.Me)
 	authApi.GET("/me-user", m.JWT, middleware.RequiredRoleMiddleware("USER"), authHandler.Me)
-
+	authApi.POST("/logout", m.JWT, authHandler.Logout)
 	return r
 }

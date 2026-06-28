@@ -12,6 +12,7 @@ type AuthHandler interface {
 	Register(c *gin.Context)
 	Login(c *gin.Context)
 	Me(c *gin.Context)
+	Logout(c *gin.Context)
 }
 
 type authHandlerImpl struct {
@@ -91,5 +92,31 @@ func (h *authHandlerImpl) Me(c *gin.Context) {
 			Email: user.Email,
 			Role:  user.Role,
 		},
+	})
+}
+
+func (h *authHandlerImpl) Logout(c *gin.Context) {
+	authContextValue, exist := c.Get("auth")
+
+	if !exist {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "akses tidak sah",
+			"error":   "Unauthorized",
+		})
+	}
+
+	authContext := authContextValue.(*dto.AuthContext)
+
+	err := h.authService.Logout(authContext)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Logout gagal",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User logged out successfully",
 	})
 }

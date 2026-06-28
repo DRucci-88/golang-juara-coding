@@ -7,17 +7,21 @@ import (
 	"praktikum/handler"
 	"praktikum/repository"
 	"praktikum/service"
+	"praktikum/worker"
 
-	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
 )
 
-func InitializedServer() *gin.Engine {
+func InitializedApplication() *Application {
 
 	wire.Build(
 		// App
-		NewRouter,
+		NewApplication,
 		NewDatabase,
+		NewRouter,
+
+		// Worker
+		worker.NewTokenCleanupWorker,
 
 		// Middleware
 		NewGroupMiddleware,

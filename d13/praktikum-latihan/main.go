@@ -1,11 +1,11 @@
 package main
 
-import (
-	"praktikum/app"
-)
+import "praktikum/app"
 
 func main() {
-	r := app.InitializedServer()
+	application := app.InitializedApplication()
 
-	r.Run(":8080")
+	application.Cleanup.Start()
+	application.Server.Run(":8080")
+
 }
