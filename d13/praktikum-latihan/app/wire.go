@@ -13,24 +13,31 @@ import (
 )
 
 func InitializedServer() *gin.Engine {
+
 	wire.Build(
 		// App
 		NewRouter,
 		NewDatabase,
 
+		// Middleware
+		NewGroupMiddleware,
+
 		// Handler
+		handler.NewAuthHandler,
 		handler.NewOrderHandler,
 		handler.NewAnaliticsHandler,
 
 		// Service
+		service.NewAuthService,
 		service.NewOrderService,
 		service.NewOrderItemService,
 
 		// Repository
 		repository.NewOrderRepository,
 		repository.NewProductRepository,
-		repository.NewUserReposutory,
+		repository.NewUserRepository,
 		repository.NewOrderItemRepository,
+		repository.NewBlackListedTokenRepository,
 	)
 	return nil
 }

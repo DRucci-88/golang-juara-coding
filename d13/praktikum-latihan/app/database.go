@@ -1,6 +1,7 @@
 package app
 
 import (
+	"praktikum/helper"
 	"praktikum/model"
 
 	"gorm.io/driver/postgres"
@@ -20,6 +21,7 @@ func NewDatabase() *gorm.DB {
 		&model.OrderItem{},
 		&model.Product{},
 		&model.User{},
+		&model.BlackListedToken{},
 	); err != nil {
 		panic("Auto Migrate Failed " + err.Error())
 	}
@@ -31,8 +33,14 @@ func NewDatabase() *gorm.DB {
 		return db
 	}
 
-	userDummy := model.User{Email: "le.rucco@gmail.com"}
-	db.Create(&userDummy)
+	user := model.User{
+		Email: "le.rucco@gmail.com",
+		Password: func() string {
+			hash, _ := helper.HashPassword("lerucco123456789")
+			return hash
+		}(),
+	}
+	db.Create(&user)
 
 	p1 := model.Product{
 		SKU:   "SKU-EL-1",

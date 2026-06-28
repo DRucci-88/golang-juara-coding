@@ -17,14 +17,18 @@ import (
 
 func InitializedServer() *gin.Engine {
 	db := NewDatabase()
+	blackListedTokenRepository := repository.NewBlackListedTokenRepository(db)
+	groupMiddleware := NewGroupMiddleware(blackListedTokenRepository)
+	userRepository := repository.NewUserRepository()
+	authService := service.NewAuthService(db, userRepository)
+	authHandler := handler.NewAuthHandler(authService)
 	orderRepository := repository.NewOrderRepository()
-	userRepository := repository.NewUserReposutory()
 	productRepository := repository.NewProductRepository()
 	orderItemRepository := repository.NewOrderItemRepository()
 	orderService := service.NewOrderService(db, orderRepository, userRepository, productRepository, orderItemRepository)
 	orderHandler := handler.NewOrderHandler(orderService)
 	orderItemService := service.NewOrderItemService(db, orderItemRepository)
 	analyticsHandler := handler.NewAnaliticsHandler(orderItemService)
-	engine := NewRouter(orderHandler, analyticsHandler)
+	engine := NewRouter(groupMiddleware, authHandler, orderHandler, analyticsHandler)
 	return engine
 }

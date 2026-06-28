@@ -24,3 +24,33 @@ Content-Type: application/json
 
 ### READ Analutics Popular Product
 GET {{baseUrl}}/api/v1/analytics/popular-products HTTP/1.1
+
+#######################
+
+### Register
+POST {{baseUrl}}/api/v1/auth/register HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "rucco@gmail.com",
+    "password": "rucco123456789",
+    "role": "ADMIN"
+}
+
+### Login
+# @name login
+POST {{baseUrl}}/api/v1/auth/login HTTP/1.1
+Content-Type: : application/json
+
+{
+    "email": "rucco@gmail.com",
+    "password": "rucco123456789"
+}
+
+# @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJlbWFpbCI6InJ1Y2NvQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImV4cCI6MTc4MjY2NTYyNCwiaWF0IjoxNzgyNjYyMDI0fQ.CDyf_5TO69PS17FGGjNfYvZPKWxBeUQKdWvASy2hggg
+@token = {{login.response.body.token}}
+
+### Me
+GET {{baseUrl}}/api/v1/auth/me HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}

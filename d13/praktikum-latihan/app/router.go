@@ -7,6 +7,8 @@ import (
 )
 
 func NewRouter(
+	m *GroupMiddleware,
+	authHandler handler.AuthHandler,
 	orderHandler handler.OrderHandler,
 	analyticsHandler handler.AnalyticsHandler,
 ) *gin.Engine {
@@ -17,10 +19,15 @@ func NewRouter(
 	})
 
 	api := r.Group("/api/v1")
-	api.POST("/orders", orderHandler.Create)
+	api.POST("/orders", m.JWT, orderHandler.Create)
 	api.GET("/orders/:id", orderHandler.FindByID)
 	api.PUT("/orders/:id/cancel", orderHandler.Cancel)
 	api.GET("/analytics/popular-products", analyticsHandler.PopularProduct)
+
+	authApi := api.Group("/auth")
+	authApi.POST("/register", authHandler.Register)
+	authApi.POST("/login", authHandler.Login)
+	authApi.GET("/me", m.JWT, authHandler.Me)
 
 	return r
 }
