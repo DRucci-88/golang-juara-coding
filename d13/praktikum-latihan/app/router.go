@@ -2,6 +2,7 @@ package app
 
 import (
 	"praktikum/handler"
+	"praktikum/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,7 +20,7 @@ func NewRouter(
 	})
 
 	api := r.Group("/api/v1")
-	api.POST("/orders", m.JWT, orderHandler.Create)
+	api.POST("/orders", m.JWT, middleware.RequiredRoleMiddleware("ADMIN"), orderHandler.Create)
 	api.GET("/orders/:id", orderHandler.FindByID)
 	api.PUT("/orders/:id/cancel", orderHandler.Cancel)
 	api.GET("/analytics/popular-products", analyticsHandler.PopularProduct)
@@ -27,7 +28,8 @@ func NewRouter(
 	authApi := api.Group("/auth")
 	authApi.POST("/register", authHandler.Register)
 	authApi.POST("/login", authHandler.Login)
-	authApi.GET("/me", m.JWT, authHandler.Me)
+	authApi.GET("/me-admin", m.JWT, middleware.RequiredRoleMiddleware("ADMIN"), authHandler.Me)
+	authApi.GET("/me-user", m.JWT, middleware.RequiredRoleMiddleware("USER"), authHandler.Me)
 
 	return r
 }
