@@ -30,33 +30,3 @@ const (
 	EmployeeStatusSuspended  EmployeeStatus = "SUSPENDED"
 	EmployeeStatusTerminated EmployeeStatus = "TERMINATED"
 )
-
-type EmployeeRepository[T any] interface {
-
-	// INSERT INTO @@table
-	Create(employee *Employee) error
-
-	// SELECT * FROM @@table WHERE id = @id LIMIT 1
-	FindByID(id uint) (*Employee, error)
-
-	// SELECT * FROM @@table
-	FindAll() ([]Employee, error)
-
-	// SELECT * FROM @@table WHERE email = @email LIMIT 1
-	FindByEmail(email string) (*Employee, error)
-
-	// SELECT * FROM @@table WHERE nik = @nik LIMIT 1
-	FindByNIK(nik string) (*Employee, error)
-
-	// SELECT * FROM @@table WHERE department_id = @departmentID
-	FindByDepartmentID(departmentID uint) ([]Employee, error)
-
-	// SELECT * FROM @@table WHERE position_id = @positionID
-	FindByPositionID(positionID uint) ([]Employee, error)
-
-	// UPDATE @@table
-	Update(employee *Employee) error
-
-	// DELETE FROM @@table WHERE id = @id
-	Delete(id uint) error
-}
