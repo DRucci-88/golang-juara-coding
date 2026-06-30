@@ -1,0 +1,28 @@
+package model
+
+import (
+	"database/sql"
+	"time"
+
+	"gorm.io/gorm"
+)
+
+type Leave struct {
+	gorm.Model
+
+	EmployeeID uint
+	Employee   Employee `gorm:"foreignKey:EmployeeID;references:ID;constraint:OnUpdate:CASCAFE,OnDelete:RESTRICT"`
+
+	StartDate time.Time      `gorm:"type:date;not null"`
+	EndDate   time.Time      `gorm:"type:date;not null"`
+	Reason    sql.NullString `gorm:"type:varchar(255)"`
+	Status    LeaveStatus    `gorm:"type:varchar(20);default:'PENDING'"`
+}
+
+type LeaveStatus string
+
+const (
+	LeaveStatusPending  LeaveStatus = "PENDING"
+	LeaveStatusApproved LeaveStatus = "APPROVED"
+	LeaveStatusRejected LeaveStatus = "REJECTED"
+)
