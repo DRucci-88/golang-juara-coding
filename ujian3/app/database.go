@@ -20,6 +20,11 @@ func NewDatabase() *gorm.DB {
 		&repository.UserDB{},
 		&repository.EmployeeDB{},
 		&repository.BlackListedTokenDB{},
+		&repository.AttendanceDB{},
+		&repository.DepartmentDB{},
+		&repository.LeaveDB{},
+		&repository.PositionDB{},
+		&repository.SalaryDB{},
 	); err != nil {
 		panic("Auto Migrate Failed " + err.Error())
 	}

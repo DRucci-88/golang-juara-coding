@@ -22,6 +22,7 @@ func main() {
 	}
 
 	application := app.InitializedApplication()
+	application.Cleanup.Start()
 
 	application.Server.Run(":8080")
 }

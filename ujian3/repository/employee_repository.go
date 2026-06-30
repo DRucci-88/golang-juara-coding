@@ -8,18 +8,28 @@ import (
 )
 
 type EmployeeDB struct {
-	ID uint `gorm:"primaryKey;autoIncrement"`
+	ID uint `gorm:"primaryKey"`
 
-	UserID uint `gorm:"uniqueIndex"`
+	UserID       uint         `gorm:"uniqueIndex"`
+	User         *UserDB      `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	DepartmentID uint         `gorm:"not null"`
+	Department   DepartmentDB `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;"`
+	PositionID   uint         `gorm:"not null"`
+	Position     PositionDB   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;"`
 
-	User *UserDB `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	NIK          string `gorm:"not null;uniqueIndex"`
+	FullName     string `gorm:"not null"`
+	Email        string `gorm:"not null;uniqueIndex"`
+	Status       string `gorm:"not null"`
+	LeaveBalance int    `gorm:"not null;default:12"`
 
-	NIK       string         `gorm:"type:varchar(16);unique;not null"`
-	FullName  string         `gorm:"type:varchar(100);not null"`
-	Status    string         `gorm:"type:varchar(20);default:'ACTIVE'"`
-	CreatedAt time.Time      `gorm:"autoCreateTime"`
-	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
-	DeletedAt gorm.DeletedAt `gorm:"index"`
+	Attendances []AttendanceDB `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Leaves      []LeaveDB      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Salaries    []SalaryDB     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	
+	CreatedAt   time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt   time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt   gorm.DeletedAt `gorm:"index"`
 }
 
 func (EmployeeDB) TableName() string { return "employees" }
@@ -62,7 +72,7 @@ func NewEmployeeRepository(
 func (r employeeRepository) Create(employee *domain.Employee) (*domain.Employee, error) {
 	employeeDB := fromDomainEmployee(employee)
 
-	if _, err := r.FindByNIK(employee.NIK); err != nil {
+	if _, err := r.FindByNIK(employee.NIK); err == nil {
 		return nil, domain.ErrEmployeeNIKDuplicate
 	}
 

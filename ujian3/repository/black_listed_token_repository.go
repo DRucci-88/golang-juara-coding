@@ -11,6 +11,10 @@ type BlackListedTokenDB struct {
 	ID          uint      `gorm:"primaryKey"`
 	TokenString string    `gorm:"type:text;uniqueIndex;not null"`
 	ExpireAt    time.Time `gorm:"not null"`
+
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 func (BlackListedTokenDB) TableName() string { return "black_listed_tokens" }

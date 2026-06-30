@@ -17,11 +17,11 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-    "email": "emp1@company.co.id",
+    "email": "emp3@company.co.id",
     "password": "emp123456789",
     "role": "EMPLOYEE",
-    "nik": "123456789456123",
-    "full_name": "emp1"
+    "nik": "323456789456123",
+    "full_name": "emp3"
 }
 
 ### Login

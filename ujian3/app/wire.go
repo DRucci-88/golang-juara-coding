@@ -7,6 +7,7 @@ import (
 	"ujian3/delivery"
 	"ujian3/repository"
 	"ujian3/usecase"
+	"ujian3/worker"
 
 	"github.com/google/wire"
 )
@@ -19,6 +20,9 @@ func InitializedApplication() *Application {
 		NewDatabase,
 		NewRouter,
 		NewGroupMiddleware,
+
+		// Worker
+		worker.NewTokenCleanupWorker,
 
 		// Handler
 		delivery.NewAuthHandler,

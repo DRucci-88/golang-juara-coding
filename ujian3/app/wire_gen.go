@@ -10,6 +10,7 @@ import (
 	"ujian3/delivery"
 	"ujian3/repository"
 	"ujian3/usecase"
+	"ujian3/worker"
 )
 
 // Injectors from wire.go:
@@ -23,6 +24,7 @@ func InitializedApplication() *Application {
 	authUsecase := usecase.NewAuthUsecase(userRepository, employeeRepository)
 	authHandler := delivery.NewAuthHandler(authUsecase)
 	engine := NewRouter(groupMiddleware, authHandler)
-	application := NewApplication(engine)
+	tokenCleanupWorker := worker.NewTokenCleanupWorker(db, blackListedTokenRepository)
+	application := NewApplication(engine, tokenCleanupWorker)
 	return application
 }
