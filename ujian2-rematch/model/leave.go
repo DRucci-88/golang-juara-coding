@@ -26,3 +26,24 @@ const (
 	LeaveStatusApproved LeaveStatus = "APPROVED"
 	LeaveStatusRejected LeaveStatus = "REJECTED"
 )
+
+type LeaveRepository[T any] interface {
+
+	// INSERT INTO @@table
+	Create(leave *Leave) error
+
+	// SELECT * FROM @@table WHERE id = @id LIMIT 1
+	FindByID(id uint) (*Leave, error)
+
+	// SELECT * FROM @@table
+	FindAll() ([]Leave, error)
+
+	// SELECT * FROM @@table WHERE employee_id = @employeeID
+	FindByEmployeeID(employeeID uint) ([]Leave, error)
+
+	// UPDATE @@table
+	Update(leave *Leave) error
+
+	// DELETE FROM @@table WHERE id = @id
+	Delete(id uint) error
+}

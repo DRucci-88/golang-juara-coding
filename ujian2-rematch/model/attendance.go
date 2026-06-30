@@ -26,3 +26,27 @@ const (
 	AttendanceStatusLate    AttendanceStatus = "LATE"
 	AttendanceStatusAbsent  AttendanceStatus = "ABSENT"
 )
+
+type AttendanceRepository[T Attendance] interface {
+
+	// INSERT INTO @@table
+	Create(tx *gorm.DB, attendance *Attendance) error
+
+	// SELECT * FROM @@table WHERE id = @id LIMIT 1
+	FindByID(id uint) (*Attendance, error)
+
+	// SELECT * FROM @@table
+	FindAll() ([]Attendance, error)
+
+	// SELECT * FROM @@table WHERE employee_id = @employeeID
+	FindByEmployeeID(employeeID uint) ([]Attendance, error)
+
+	// SELECT * FROM @@table WHERE employee_id = @employeeID AND date = @date LIMIT 1
+	FindByEmployeeAndDate(employeeID uint, date time.Time) (*Attendance, error)
+
+	// UPDATE @@table
+	Update(attendance *Attendance) error
+
+	// DELETE FROM @@table WHERE id = @id
+	Delete(id uint) error
+}
