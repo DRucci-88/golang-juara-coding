@@ -11,7 +11,7 @@ type Attendance struct {
 	gorm.Model
 
 	EmployeeID uint
-	Employee   Employee `gorm:"foreignKey:EmployeeID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
+	Employee   *Employee `gorm:"foreignKey:EmployeeID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
 
 	Date     time.Time        `gorm:"type:date;not null"`
 	CheckIn  sql.NullTime     `gorm:"type:varchar(10)"`

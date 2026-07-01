@@ -10,7 +10,7 @@ type Salary struct {
 	gorm.Model
 
 	EmployeeID uint
-	Employee   Employee `gorm:"foreignKey:EmployeeID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
+	Employee   *Employee `gorm:"foreignKey:EmployeeID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
 
 	Period      time.Time `gorm:"type:varchar(10);not null"`
 	BasicSalary float64   `gorm:"type:numeric(12,2);not null"`

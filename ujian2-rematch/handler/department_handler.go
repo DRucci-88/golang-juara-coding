@@ -36,8 +36,7 @@ func (h *DepartmentHandler) Create(c *gin.Context) {
 		return
 	}
 
-	var res dto.DepartmentResponse
-	res.FromModel(department)
+	res := dto.NewDepartmentResponse(department)
 	c.JSON(http.StatusCreated, gin.H{"data": res})
 }
 
@@ -54,8 +53,7 @@ func (h *DepartmentHandler) FindByID(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	var res dto.DepartmentResponse
-	res.FromModel(department)
+	res := dto.NewDepartmentResponse(department)
 	c.JSON(http.StatusOK, gin.H{"data": res})
 }
 
@@ -67,12 +65,7 @@ func (h *DepartmentHandler) FindAll(c *gin.Context) {
 		return
 	}
 
-	resList := make([]dto.DepartmentResponse, 0)
-	for _, d := range departments {
-		var res dto.DepartmentResponse
-		res.FromModel(&d)
-		resList = append(resList, res)
-	}
+	resList := dto.NewDepartmentResponses(departments)
 
 	c.JSON(http.StatusOK, gin.H{"data": resList})
 }
@@ -90,14 +83,13 @@ func (h *DepartmentHandler) Update(c *gin.Context) {
 		return
 	}
 
-	department, err := h.departmentService.Update(c.Request.Context(),id, &req)
+	department, err := h.departmentService.Update(c.Request.Context(), id, &req)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	var res dto.DepartmentResponse
-	res.FromModel(department)
+	res := dto.NewDepartmentResponse(department)
 	c.JSON(http.StatusOK, gin.H{"data": res})
 }
 
@@ -114,7 +106,6 @@ func (h *DepartmentHandler) Delete(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	var res dto.DepartmentResponse
-	res.FromModel(department)
+	res := dto.NewDepartmentResponse(department)
 	c.JSON(http.StatusOK, gin.H{"data": res})
 }

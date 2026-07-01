@@ -11,7 +11,7 @@ type Leave struct {
 	gorm.Model
 
 	EmployeeID uint
-	Employee   Employee `gorm:"foreignKey:EmployeeID;references:ID;constraint:OnUpdate:CASCAFE,OnDelete:RESTRICT"`
+	Employee   *Employee `gorm:"foreignKey:EmployeeID;references:ID;constraint:OnUpdate:CASCAFE,OnDelete:RESTRICT"`
 
 	StartDate time.Time      `gorm:"type:date;not null"`
 	EndDate   time.Time      `gorm:"type:date;not null"`

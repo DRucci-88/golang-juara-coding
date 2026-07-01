@@ -29,15 +29,14 @@ func (h *PositionHandler) Create(c *gin.Context) {
 		return
 	}
 
-	department, err := h.positionService.Create(c.Request.Context(), &req)
+	position, err := h.positionService.Create(c.Request.Context(), &req)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	var res dto.PositionResponse
-	res.FromModel(department)
+	res := dto.NewPositionResponse(position)
 	c.JSON(http.StatusCreated, gin.H{"data": res})
 }
 
@@ -48,31 +47,25 @@ func (h *PositionHandler) FindByID(c *gin.Context) {
 		return
 	}
 
-	department, err := h.positionService.FindByID(c.Request.Context(), id)
+	position, err := h.positionService.FindByID(c.Request.Context(), id)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	var res dto.PositionResponse
-	res.FromModel(department)
+	res := dto.NewPositionResponse(position)
 	c.JSON(http.StatusOK, gin.H{"data": res})
 }
 
 func (h *PositionHandler) FindAll(c *gin.Context) {
-	departments, err := h.positionService.FindAll(c.Request.Context())
+	positions, err := h.positionService.FindAll(c.Request.Context())
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	resList := make([]dto.PositionResponse, 0)
-	for _, d := range departments {
-		var res dto.PositionResponse
-		res.FromModel(&d)
-		resList = append(resList, res)
-	}
+	resList := dto.NewPositionResponses(positions)
 
 	c.JSON(http.StatusOK, gin.H{"data": resList})
 }
@@ -90,14 +83,13 @@ func (h *PositionHandler) Update(c *gin.Context) {
 		return
 	}
 
-	department, err := h.positionService.Update(c.Request.Context(),id, &req)
+	position, err := h.positionService.Update(c.Request.Context(), id, &req)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	var res dto.PositionResponse
-	res.FromModel(department)
+	res := dto.NewPositionResponse(position)
 	c.JSON(http.StatusOK, gin.H{"data": res})
 }
 
@@ -108,13 +100,12 @@ func (h *PositionHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	department, err := h.positionService.Delete(c.Request.Context(), id)
+	position, err := h.positionService.Delete(c.Request.Context(), id)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	var res dto.PositionResponse
-	res.FromModel(department)
+	res := dto.NewPositionResponse(position)
 	c.JSON(http.StatusOK, gin.H{"data": res})
 }

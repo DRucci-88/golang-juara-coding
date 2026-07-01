@@ -18,8 +18,23 @@ type PositionResponse struct {
 	BaseSalary float64 `json:"base_salary"`
 }
 
-func (dto *PositionResponse) FromModel(model *model.Position) {
-	dto.ID = model.ID
-	dto.Title = model.Title
-	dto.BaseSalary = model.BaseSalary
+func NewPositionResponse(model *model.Position) *PositionResponse {
+	if model == nil {
+		return nil
+	}
+
+	return &PositionResponse{
+		ID:         model.ID,
+		Title:      model.Title,
+		BaseSalary: model.BaseSalary,
+	}
+}
+
+func NewPositionResponses(models []model.Position) []PositionResponse {
+	result := make([]PositionResponse, 0, len(models))
+
+	for i := range models {
+		result = append(result, *NewPositionResponse(&models[i]))
+	}
+	return result
 }

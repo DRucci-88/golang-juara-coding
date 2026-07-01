@@ -13,10 +13,10 @@ type Employee struct {
 	Status   EmployeeStatus `gorm:"type:varchar(20);default:'ACTIVE';not null"`
 
 	DepartmentID uint
-	Department   Department `gorm:"foreignKey:DepartmentID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
+	Department   *Department `gorm:"foreignKey:DepartmentID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
 
 	PositionID uint
-	Position   Position `gorm:"foreignKey:PositionID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
+	Position   *Position `gorm:"foreignKey:PositionID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
 
 	Attendances []Attendance `gorm:"foreignKey:EmployeeID"`
 	Leaves      []Leave      `gorm:"foreignKey:EmployeeID"`
