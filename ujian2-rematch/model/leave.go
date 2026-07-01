@@ -26,3 +26,9 @@ const (
 	LeaveStatusApproved LeaveStatus = "APPROVED"
 	LeaveStatusRejected LeaveStatus = "REJECTED"
 )
+
+type LeavePreload string
+
+const (
+	LeavePreloadEmployee LeavePreload = "Employee"
+)

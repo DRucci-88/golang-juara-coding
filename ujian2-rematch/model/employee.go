@@ -30,3 +30,14 @@ const (
 	EmployeeStatusSuspended  EmployeeStatus = "SUSPENDED"
 	EmployeeStatusTerminated EmployeeStatus = "TERMINATED"
 )
+
+type EmployeePreload string
+
+const (
+	EmployeePreloadDepartment EmployeePreload = "Department"
+	EmployeePreloadPosition   EmployeePreload = "Position"
+
+	EmployeePreloadAttendance EmployeePreload = "Attendances"
+	EmployeePreloadLeave      EmployeePreload = "Leaves"
+	EmployeePreloadSalary     EmployeePreload = "Salaries"
+)

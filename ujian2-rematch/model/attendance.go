@@ -14,9 +14,9 @@ type Attendance struct {
 	Employee   Employee `gorm:"foreignKey:EmployeeID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
 
 	Date     time.Time        `gorm:"type:date;not null"`
-	CheckIn  sql.NullString   `gorm:"varchar(10)"`
-	CheckOut sql.NullString   `gorm:"varchar(10)"`
-	Status   AttendanceStatus `gorm:"varchar(10);not null"`
+	CheckIn  sql.NullTime     `gorm:"type:varchar(10)"`
+	CheckOut sql.NullTime     `gorm:"type:varchar(10)"`
+	Status   AttendanceStatus `gorm:"type:varchar(10);not null"`
 }
 
 type AttendanceStatus string
@@ -25,4 +25,10 @@ const (
 	AttendanceStatusPresent AttendanceStatus = "PRESENT"
 	AttendanceStatusLate    AttendanceStatus = "LATE"
 	AttendanceStatusAbsent  AttendanceStatus = "ABSENT"
+)
+
+type AttendancePreload string
+
+const (
+	AttendancePreloadEmployee AttendancePreload = "Employee"
 )

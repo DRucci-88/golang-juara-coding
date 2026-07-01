@@ -9,3 +9,9 @@ type Position struct {
 
 	Employees []Employee `gorm:"foreignKey:PositionID"`
 }
+
+type PositionPreload string
+
+const (
+	PositionPreloadEmployees PositionPreload = "Employees"
+)

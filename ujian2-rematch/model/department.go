@@ -9,3 +9,9 @@ type Department struct {
 
 	Employees []Employee `gorm:"foreignKey:DepartmentID"`
 }
+
+type DepartmentPreload string
+
+const (
+	DepartmentPreloadEmployees DepartmentPreload = "Employees"
+)
