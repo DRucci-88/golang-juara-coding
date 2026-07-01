@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"ujian2_rematch/model"
 	"ujian2_rematch/model/generated"
 
@@ -34,21 +35,26 @@ func (r *PositionRepository) Create(
 	ctx context.Context,
 	position *model.Position,
 ) error {
-
-	return gorm.G[model.Position](r.db).
+	err := gorm.G[model.Position](r.db).
 		Create(ctx, position)
+	return err
 }
 
 func (r *PositionRepository) Update(
 	ctx context.Context,
+	id uint,
 	position *model.Position,
-) error {
+) (int, error) {
 
-	_, err := gorm.G[model.Position](r.db).
-		Where(generated.Position.ID.Eq(position.ID)).
+	rows, err := gorm.G[model.Position](r.db).
+		Where(generated.Position.ID.Eq(id)).
 		Updates(ctx, *position)
 
-	return err
+	if rows == 0 {
+		return rows, model.ErrPositionNotFound
+	}
+
+	return rows, err
 }
 
 func (r *PositionRepository) Delete(
@@ -75,6 +81,10 @@ func (r *PositionRepository) FindByID(
 		Where(generated.Position.ID.Eq(id)).
 		First(ctx)
 
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, model.ErrPositionNotFound
+	}
+
 	return &position, err
 }
 
@@ -100,6 +110,10 @@ func (r *PositionRepository) FindByName(
 	).
 		Where(generated.Position.Title.Eq(title)).
 		First(ctx)
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, model.ErrPositionNotFound
+	}
 
 	return &position, err
 }

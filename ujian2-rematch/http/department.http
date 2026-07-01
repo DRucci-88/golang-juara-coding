@@ -1,0 +1,30 @@
+@baseUrl = http://localhost:8080
+@departments = {{baseUrl}}/departments
+
+### Health
+GET {{baseUrl}}/health HTTP/1.1
+
+### CREATE Departments
+POST {{baseUrl}}/departments HTTP/1.1
+Content-Type: : application/json
+
+{
+    "name": "HR",
+    "code": "DEPT-HR"
+}
+
+### FIND ALL Departments
+GET {{departments}} HTTP/1.1
+
+### FIND BY ID Departments
+GET {{departments}}/1 HTTP/1.1
+
+### UPDATE By ID Departments
+PUT {{departments}}/2 HTTP/1.1
+Content-Type: : application/json
+
+{
+    "name": "IT HR 1"
+}
+### DELETE By Id Departments
+DELETE {{departments}}/1 HTTP/1.1

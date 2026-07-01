@@ -1,6 +1,10 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"errors"
+
+	"gorm.io/gorm"
+)
 
 type Position struct {
 	gorm.Model
@@ -14,4 +18,8 @@ type PositionPreload string
 
 const (
 	PositionPreloadEmployees PositionPreload = "Employees"
+)
+
+var (
+	ErrPositionNotFound = errors.New("Position Not Found")
 )

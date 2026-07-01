@@ -1,0 +1,31 @@
+@baseUrl = http://localhost:8080
+@positions = {{baseUrl}}/positions
+
+### Health
+GET {{baseUrl}}/health HTTP/1.1
+
+### CREATE position
+POST {{positions}} HTTP/1.1
+Content-Type: : application/json
+
+{
+    "title": "Software Enginner",
+    "base_salary": 7000000
+}
+
+### FIND ALL positions
+GET {{positions}} HTTP/1.1
+
+### FIND BY ID positions
+GET {{positions}}/1 HTTP/1.1
+
+### UPDATE By ID positions
+PUT {{positions}}/1 HTTP/1.1
+Content-Type: : application/json
+
+{
+    "title": "Software Enginner",
+    "base_salary": 8000000
+}
+### DELETE By Id positions
+DELETE {{positions}}/1 HTTP/1.1

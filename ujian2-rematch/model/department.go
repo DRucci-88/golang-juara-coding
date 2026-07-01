@@ -1,6 +1,10 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"errors"
+
+	"gorm.io/gorm"
+)
 
 type Department struct {
 	gorm.Model
@@ -14,4 +18,8 @@ type DepartmentPreload string
 
 const (
 	DepartmentPreloadEmployees DepartmentPreload = "Employees"
+)
+
+var (
+	ErrDepartmentNotFound = errors.New("Department Not Found")
 )

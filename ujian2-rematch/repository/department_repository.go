@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"ujian2_rematch/model"
 	"ujian2_rematch/model/generated"
 
@@ -34,21 +35,25 @@ func (r *DepartmentRepository) Create(
 	ctx context.Context,
 	department *model.Department,
 ) error {
-
-	return gorm.G[model.Department](r.db).
+	err := gorm.G[model.Department](r.db).
 		Create(ctx, department)
+	return err
 }
 
 func (r *DepartmentRepository) Update(
 	ctx context.Context,
+	id uint,
 	department *model.Department,
-) error {
-
-	_, err := gorm.G[model.Department](r.db).
-		Where(generated.Department.ID.Eq(department.ID)).
+) (int, error) {
+	rows, err := gorm.G[model.Department](r.db).
+		Where(generated.Department.ID.Eq(id)).
 		Updates(ctx, *department)
 
-	return err
+	if rows == 0 {
+		return rows, model.ErrDepartmentNotFound
+	}
+
+	return rows, err
 }
 
 func (r *DepartmentRepository) Delete(
@@ -74,6 +79,10 @@ func (r *DepartmentRepository) FindByID(
 	).
 		Where(generated.Department.ID.Eq(id)).
 		First(ctx)
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, model.ErrDepartmentNotFound
+	}
 
 	return &department, err
 }
@@ -101,6 +110,10 @@ func (r *DepartmentRepository) FindByCode(
 		Where(generated.Department.Code.Eq(code)).
 		First(ctx)
 
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, model.ErrPositionNotFound
+	}
+
 	return &department, err
 }
 
@@ -115,6 +128,10 @@ func (r *DepartmentRepository) FindByName(
 	).
 		Where(generated.Department.Name.Eq(name)).
 		First(ctx)
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, model.ErrPositionNotFound
+	}
 
 	return &department, err
 }
