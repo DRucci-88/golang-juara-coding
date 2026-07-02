@@ -5,13 +5,17 @@ info:
 
 http:
   method: POST
-  url: "{{baseURL}}/departments"
+  url: "{{baseURL}}/employees"
   body:
     type: json
     data: |-
       {
-          "name": "Human Resource Development",
-          "code": "DEPT-HR"
+          "nik": "123456789",
+          "full_name": "Emp 2",
+          "email": "emp2@gmail.com",
+          "password": "emp2",
+          "department_id": 1,
+          "position_id": 1
       }
   auth: inherit
 

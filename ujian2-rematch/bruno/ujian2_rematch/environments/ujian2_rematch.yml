@@ -2,3 +2,5 @@ name: ujian2_rematch
 variables:
   - name: baseURL
     value: http://localhost:8080
+  - name: token
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJlbXBsb3llZV9pZCI6MiwiZW1haWwiOiJlbXAyQGdtYWlsLmNvbSIsInJvbGUiOiJFTVBMT1lFRSIsImV4cCI6MTc4MzA1NjA5MSwiaWF0IjoxNzgzMDIwMDkxfQ.hfqHKgf7LiJNu0EVPUfRnjyu1fd3JXhzbnD3se1K96I

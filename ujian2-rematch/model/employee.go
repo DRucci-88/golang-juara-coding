@@ -40,6 +40,7 @@ type EmployeePreload string
 const (
 	EmployeePreloadDepartment EmployeePreload = "Department"
 	EmployeePreloadPosition   EmployeePreload = "Position"
+	EmployeePreloadUser       EmployeePreload = "User"
 
 	EmployeePreloadAttendance EmployeePreload = "Attendances"
 	EmployeePreloadLeave      EmployeePreload = "Leaves"

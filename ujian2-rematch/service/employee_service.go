@@ -33,44 +33,54 @@ func (s *EmployeeService) Create(
 	dto *dto.EmployeeCreateRequest,
 ) (*model.Employee, error) {
 
-	_, errPosition := s.positionRepo.FindByID(ctx, dto.PositionID)
-	if errPosition != nil {
-		return nil, errPosition
+	if _, err := s.positionRepo.FindByID(ctx, dto.PositionID); err != nil {
+		return nil, err
 	}
 
-	_, errDepartment := s.departmentRepo.FindByID(ctx, dto.DepartmentID)
-	if errDepartment != nil {
-		return nil, errDepartment
+	if _, err := s.departmentRepo.FindByID(ctx, dto.DepartmentID); err != nil {
+		return nil, err
 	}
 
-	password, errPassword := helper.HashPassword(dto.Password)
-	if errPassword != nil {
-		return nil, errPassword
+	if _, err := s.userRepo.FindByEmail(ctx, dto.Email); err == nil {
+		return nil, model.ErrUserEmailAlreadyExists
 	}
 
-	user := model.User{
-		Role:     model.UserRoleEmployee,
-		Email:    dto.Email,
-		Password: password,
+	password, err := helper.HashPassword(dto.Password)
+	if err != nil {
+		return nil, err
 	}
 
-	errUser := s.userRepo.Create(ctx, &user)
-	if errUser != nil {
-		return nil, errUser
+	var employeeID uint
+	err = s.repo.Transaction(ctx, func(repo *repository.RepositoryManager) error {
+		user := &model.User{
+			Role:     model.UserRoleEmployee,
+			Email:    dto.Email,
+			Password: password,
+		}
+		if err := repo.User().Create(ctx, user); err != nil {
+			return err
+		}
+
+		employee := &model.Employee{
+			NIK:          dto.NIK,
+			FullName:     dto.FullName,
+			Status:       model.EmployeeStatusActive,
+			DepartmentID: dto.DepartmentID,
+			PositionID:   dto.PositionID,
+			UserID:       user.ID,
+		}
+
+		if err := repo.Employee().Create(ctx, employee); err != nil {
+			return err
+		}
+		employeeID = employee.ID
+		return nil
+	})
+	if err != nil {
+		return nil, err
 	}
 
-	employee := model.Employee{
-		NIK:          dto.NIK,
-		FullName:     dto.FullName,
-		Status:       model.EmployeeStatusActive,
-		DepartmentID: dto.DepartmentID,
-		PositionID:   dto.PositionID,
-		UserID:       user.ID,
-	}
-
-	errEmp := s.employeeRepo.Create(ctx, &employee)
-
-	return &employee, errEmp
+	return s.employeeRepo.FindByID(ctx, employeeID, model.EmployeePreloadUser)
 }
 
 func (s *EmployeeService) FindAll(

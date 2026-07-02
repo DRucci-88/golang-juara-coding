@@ -19,7 +19,7 @@ func NewRouter(
 	})
 
 	authApi := r.Group("/auth")
-	authApi.POST("/login")
+	authApi.POST("/login", authHandler.Login)
 
 	departmentApi := r.Group("/departments")
 	departmentApi.POST("", departmentHander.Create)

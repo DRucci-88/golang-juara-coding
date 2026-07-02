@@ -1,7 +1,6 @@
 package dto
 
 import (
-	"log"
 	"ujian2_rematch/model"
 )
 
@@ -36,6 +35,8 @@ type EmployeeResponse struct {
 	FullName string `json:"full_name"`
 	Email    string `json:"email"`
 
+	UserID       uint                `json:"user_id"`
+	User         *UserResponse       `json:"user,omitempty"`
 	DepartmentID uint                `json:"department_id"`
 	Department   *DepartmentResponse `json:"department,omitempty"`
 	PositionID   uint                `json:"position_id"`
@@ -46,13 +47,14 @@ func NewEmployeeResponse(model *model.Employee) *EmployeeResponse {
 	if model == nil {
 		return nil
 	}
-	log.Printf("%+v", model)
+
 	return &EmployeeResponse{
 		ID:       model.ID,
 		NIK:      model.NIK,
 		FullName: model.FullName,
-		Email:    model.User.Email,
 
+		UserID:       model.UserID,
+		User:         NewUserResponse(model.User),
 		DepartmentID: model.DepartmentID,
 		Department:   NewDepartmentResponse(model.Department),
 		PositionID:   model.PositionID,

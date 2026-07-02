@@ -29,5 +29,6 @@ const (
 )
 
 var (
-	ErrUserNotFound = errors.New("User Not Found")
+	ErrUserNotFound           = errors.New("User Not Found")
+	ErrUserEmailAlreadyExists = errors.New("User Email Already Exists")
 )
