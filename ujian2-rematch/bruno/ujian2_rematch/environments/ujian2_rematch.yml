@@ -1,0 +1,4 @@
+name: ujian2_rematch
+variables:
+  - name: baseURL
+    value: http://localhost:8080
