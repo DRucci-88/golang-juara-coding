@@ -9,6 +9,7 @@ import (
 func NewRouter(
 	departmentHander *handler.DepartmentHandler,
 	positionHandler *handler.PositionHandler,
+	employeeHandler *handler.EmployeeHandler,
 ) *gin.Engine {
 	r := gin.Default()
 
@@ -29,6 +30,12 @@ func NewRouter(
 	positionApi.GET("", positionHandler.FindAll)
 	positionApi.PUT("/:id", positionHandler.Update)
 	positionApi.DELETE("/:id", positionHandler.Delete)
+
+	employeeApi := r.Group("/employees")
+	employeeApi.POST("", employeeHandler.Create)
+	employeeApi.GET("/:id", employeeHandler.FindByID)
+	employeeApi.GET("", employeeHandler.FindAll)
+	employeeApi.PUT("/:id", employeeHandler.Update)
 
 	return r
 }

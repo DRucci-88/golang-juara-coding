@@ -21,7 +21,9 @@ func InitializedApplication() *Application {
 	departmentHandler := handler.NewDepartmentHandler(departmentService)
 	positionService := service.NewPositionService(repositoryManager)
 	positionHandler := handler.NewPositionHandler(positionService)
-	engine := NewRouter(departmentHandler, positionHandler)
+	employeeService := service.NewEmployeeService(repositoryManager)
+	employeeHandler := handler.NewEmployeeHandler(employeeService)
+	engine := NewRouter(departmentHandler, positionHandler, employeeHandler)
 	application := NewApplication(engine)
 	return application
 }

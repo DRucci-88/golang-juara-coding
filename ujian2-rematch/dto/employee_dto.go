@@ -2,6 +2,13 @@ package dto
 
 import "ujian2_rematch/model"
 
+type EmployeeFilterRequest struct {
+	Search       *string               `form:"search"`
+	Status       *model.EmployeeStatus `form:"status"`
+	DepartmentID *uint                 `form:"department_id"`
+	PositionID   *uint                 `form:"position_id"`
+}
+
 type EmployeeCreateRequest struct {
 	NIK      string `json:"nik" binding:"required,max=50"`
 	FullName string `json:"full_name" binding:"required,max=100"`
@@ -9,6 +16,15 @@ type EmployeeCreateRequest struct {
 
 	DepartmentID uint `json:"department_id" binding:"required"`
 	PositionID   uint `json:"position_id" binding:"required"`
+}
+
+type EmployeeUpdateRequest struct {
+	NIK      string `json:"nik" binding:"max=50"`
+	FullName string `json:"full_name" binding:"max=100"`
+	Email    string `json:"email" binding:"email,max=100"`
+
+	DepartmentID uint `json:"department_id"`
+	PositionID   uint `json:"position_id"`
 }
 
 type EmployeeResponse struct {

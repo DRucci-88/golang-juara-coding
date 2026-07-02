@@ -1,6 +1,8 @@
 package model
 
 import (
+	"errors"
+
 	"gorm.io/gorm"
 )
 
@@ -40,4 +42,8 @@ const (
 	EmployeePreloadAttendance EmployeePreload = "Attendances"
 	EmployeePreloadLeave      EmployeePreload = "Leaves"
 	EmployeePreloadSalary     EmployeePreload = "Salaries"
+)
+
+var (
+	ErrEmployeeNotFound = errors.New("Employee Not Found")
 )

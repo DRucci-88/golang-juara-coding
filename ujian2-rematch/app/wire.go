@@ -21,10 +21,12 @@ func InitializedApplication() *Application {
 		// Handler
 		handler.NewDepartmentHandler,
 		handler.NewPositionHandler,
+		handler.NewEmployeeHandler,
 
 		// Service
 		service.NewDepartmentService,
 		service.NewPositionService,
+		service.NewEmployeeService,
 
 		// Repository Manager
 		repository.NewRepositoryManager,

@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"errors"
+	"ujian2_rematch/dto"
 	"ujian2_rematch/model"
 	"ujian2_rematch/model/generated"
 
@@ -43,13 +45,19 @@ func (r *EmployeeRepository) Create(
 // Update
 func (r *EmployeeRepository) Update(
 	ctx context.Context,
+	id uint,
 	employee *model.Employee,
 ) (int, error) {
 
-	return gorm.G[model.Employee](r.db).
-		Where(generated.Employee.ID.Eq(employee.ID)).
+	rows, err := gorm.G[model.Employee](r.db).
+		Where(generated.Employee.ID.Eq(id)).
 		Updates(ctx, *employee)
 
+	if rows == 0 {
+		return rows, model.ErrEmployeeNotFound
+	}
+
+	return rows, err
 }
 
 // Delete
@@ -74,19 +82,53 @@ func (r *EmployeeRepository) FindByID(
 	).
 		Where(generated.Employee.ID.Eq(id)).
 		First(ctx)
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, model.ErrEmployeeNotFound
+	}
+
 	return &employee, err
 }
 
 // Find All
 func (r *EmployeeRepository) FindAll(
 	ctx context.Context,
+	filter *dto.EmployeeFilterRequest,
 	preloads ...model.EmployeePreload,
 ) ([]model.Employee, error) {
 
-	return gorm.G[model.Employee](
-		r.preload(r.db, preloads...),
-	).
-		Find(ctx)
+	db := r.preload(r.db, preloads...)
+
+	if filter == nil {
+		return gorm.G[model.Employee](db).Find(ctx)
+	}
+
+	if filter.Search != nil {
+		db = db.Where(
+			generated.Employee.FullName.Like("%" + *filter.Search + "%"),
+		)
+	}
+
+	if filter.DepartmentID != nil {
+		db = db.Where(
+			generated.Employee.DepartmentID.Eq(*filter.DepartmentID),
+		)
+	}
+
+	if filter.PositionID != nil {
+		db = db.Where(
+			generated.Employee.PositionID.Eq(*filter.PositionID),
+		)
+	}
+
+	if filter.Status != nil {
+		db = db.Where(
+			generated.Employee.Status.Eq(string(*filter.Status)),
+		)
+	}
+
+	return gorm.G[model.Employee](db).Find(ctx)
+
 }
 
 // Find By Email
