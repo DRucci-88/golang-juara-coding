@@ -14,6 +14,9 @@ type Employee struct {
 	Email    string         `gorm:"type:varchar(100);not null"`
 	Status   EmployeeStatus `gorm:"type:varchar(20);default:'ACTIVE';not null"`
 
+	// UserID uint
+	// User   *User `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
+
 	DepartmentID uint
 	Department   *Department `gorm:"foreignKey:DepartmentID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
 

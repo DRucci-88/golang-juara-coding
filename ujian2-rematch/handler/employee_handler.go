@@ -72,7 +72,7 @@ func (h *EmployeeHandler) FindByID(c *gin.Context) {
 		return
 	}
 	res := dto.NewEmployeeResponse(employee)
-	c.JSON(http.StatusCreated, gin.H{"data": res})
+	c.JSON(http.StatusOK, gin.H{"data": res})
 }
 
 func (h *EmployeeHandler) Update(c *gin.Context) {

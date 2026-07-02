@@ -71,7 +71,12 @@ func (s *EmployeeService) FindByID(
 	ctx context.Context,
 	id int,
 ) (*model.Employee, error) {
-	return s.employeeRepo.FindByID(ctx, uint(id))
+	return s.employeeRepo.FindByID(
+		ctx,
+		uint(id),
+		model.EmployeePreloadDepartment,
+		model.EmployeePreloadPosition,
+	)
 }
 
 func (s *EmployeeService) Update(

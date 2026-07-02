@@ -10,25 +10,25 @@ import (
 )
 
 type DepartmentRepository struct {
-	db *gorm.DB
+	db    *gorm.DB
+	query gorm.Interface[model.Department]
 }
 
 func (r *RepositoryManager) Department() *DepartmentRepository {
 	return &DepartmentRepository{
-		db: r.db,
+		db:    r.db,
+		query: gorm.G[model.Department](r.db),
 	}
 }
 
-func (r *DepartmentRepository) preload(
-	db *gorm.DB,
+func (r *DepartmentRepository) queryWithPreloads(
 	preloads ...model.DepartmentPreload,
-) *gorm.DB {
-
+) gorm.ChainInterface[model.Department] {
+	var chain gorm.ChainInterface[model.Department] = r.query.Scopes()
 	for _, preload := range preloads {
-		db = db.Preload(string(preload))
+		chain = chain.Preload(string(preload), nil)
 	}
-
-	return db
+	return chain
 }
 
 func (r *DepartmentRepository) Create(
@@ -74,9 +74,7 @@ func (r *DepartmentRepository) FindByID(
 	preloads ...model.DepartmentPreload,
 ) (*model.Department, error) {
 
-	department, err := gorm.G[model.Department](
-		r.preload(r.db, preloads...),
-	).
+	department, err := r.queryWithPreloads(preloads...).
 		Where(generated.Department.ID.Eq(id)).
 		First(ctx)
 
@@ -92,9 +90,7 @@ func (r *DepartmentRepository) FindAll(
 	preloads ...model.DepartmentPreload,
 ) ([]model.Department, error) {
 
-	return gorm.G[model.Department](
-		r.preload(r.db, preloads...),
-	).
+	return r.queryWithPreloads(preloads...).
 		Find(ctx)
 }
 
@@ -104,9 +100,7 @@ func (r *DepartmentRepository) FindByCode(
 	preloads ...model.DepartmentPreload,
 ) (*model.Department, error) {
 
-	department, err := gorm.G[model.Department](
-		r.preload(r.db, preloads...),
-	).
+	department, err := r.queryWithPreloads(preloads...).
 		Where(generated.Department.Code.Eq(code)).
 		First(ctx)
 
@@ -123,9 +117,7 @@ func (r *DepartmentRepository) FindByName(
 	preloads ...model.DepartmentPreload,
 ) (*model.Department, error) {
 
-	department, err := gorm.G[model.Department](
-		r.preload(r.db, preloads...),
-	).
+	department, err := r.queryWithPreloads(preloads...).
 		Where(generated.Department.Name.Eq(name)).
 		First(ctx)
 

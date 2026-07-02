@@ -11,26 +11,26 @@ import (
 )
 
 type EmployeeRepository struct {
-	db *gorm.DB
+	db    *gorm.DB
+	query gorm.Interface[model.Employee]
 }
 
 // Factory method from RepositoryManager
 func (r *RepositoryManager) Employee() *EmployeeRepository {
 	return &EmployeeRepository{
-		db: r.db,
+		db:    r.db,
+		query: gorm.G[model.Employee](r.db),
 	}
 }
 
-func (r *EmployeeRepository) preload(
-	db *gorm.DB,
+func (r *EmployeeRepository) queryWithPreloads(
 	preloads ...model.EmployeePreload,
-) *gorm.DB {
-
+) gorm.ChainInterface[model.Employee] {
+	var chain gorm.ChainInterface[model.Employee] = r.query.Scopes()
 	for _, preload := range preloads {
-		db = db.Preload(string(preload))
+		chain = chain.Preload(string(preload), nil)
 	}
-
-	return db
+	return chain
 }
 
 // Create
@@ -38,7 +38,7 @@ func (r *EmployeeRepository) Create(
 	ctx context.Context,
 	employee *model.Employee,
 ) error {
-	return gorm.G[model.Employee](r.db).
+	return r.query.
 		Create(ctx, employee)
 }
 
@@ -49,7 +49,7 @@ func (r *EmployeeRepository) Update(
 	employee *model.Employee,
 ) (int, error) {
 
-	rows, err := gorm.G[model.Employee](r.db).
+	rows, err := r.query.
 		Where(generated.Employee.ID.Eq(id)).
 		Updates(ctx, *employee)
 
@@ -65,7 +65,7 @@ func (r *EmployeeRepository) Delete(
 	ctx context.Context,
 	id uint,
 ) (int, error) {
-	return gorm.G[model.Employee](r.db).
+	return r.query.
 		Where(generated.Employee.ID.Eq(id)).
 		Delete(ctx)
 }
@@ -77,9 +77,7 @@ func (r *EmployeeRepository) FindByID(
 	preloads ...model.EmployeePreload,
 ) (*model.Employee, error) {
 
-	employee, err := gorm.G[model.Employee](
-		r.preload(r.db, preloads...),
-	).
+	employee, err := r.queryWithPreloads(preloads...).
 		Where(generated.Employee.ID.Eq(id)).
 		First(ctx)
 
@@ -97,37 +95,37 @@ func (r *EmployeeRepository) FindAll(
 	preloads ...model.EmployeePreload,
 ) ([]model.Employee, error) {
 
-	db := r.preload(r.db, preloads...)
+	chain := r.queryWithPreloads(preloads...)
 
 	if filter == nil {
-		return gorm.G[model.Employee](db).Find(ctx)
+		return chain.Find(ctx)
 	}
 
 	if filter.Search != nil {
-		db = db.Where(
+		chain = chain.Where(
 			generated.Employee.FullName.Like("%" + *filter.Search + "%"),
 		)
 	}
 
 	if filter.DepartmentID != nil {
-		db = db.Where(
+		chain = chain.Where(
 			generated.Employee.DepartmentID.Eq(*filter.DepartmentID),
 		)
 	}
 
 	if filter.PositionID != nil {
-		db = db.Where(
+		chain = chain.Where(
 			generated.Employee.PositionID.Eq(*filter.PositionID),
 		)
 	}
 
 	if filter.Status != nil {
-		db = db.Where(
+		chain = chain.Where(
 			generated.Employee.Status.Eq(string(*filter.Status)),
 		)
 	}
 
-	return gorm.G[model.Employee](db).Find(ctx)
+	return chain.Find(ctx)
 
 }
 
@@ -137,9 +135,7 @@ func (r *EmployeeRepository) FindByEmail(
 	email string,
 	preloads ...model.EmployeePreload,
 ) (*model.Employee, error) {
-	employee, err := gorm.G[model.Employee](
-		r.preload(r.db, preloads...),
-	).
+	employee, err := r.queryWithPreloads(preloads...).
 		Where(generated.Employee.Email.Eq(email)).
 		First(ctx)
 	return &employee, err
@@ -151,9 +147,7 @@ func (r *EmployeeRepository) FindByNIK(
 	nik string,
 	preloads ...model.EmployeePreload,
 ) (*model.Employee, error) {
-	employee, err := gorm.G[model.Employee](
-		r.preload(r.db, preloads...),
-	).
+	employee, err := r.queryWithPreloads(preloads...).
 		Where(generated.Employee.NIK.Eq(nik)).
 		First(ctx)
 	return &employee, err
@@ -165,9 +159,7 @@ func (r *EmployeeRepository) FindAllByDepartmentID(
 	departmentID uint,
 	preloads ...model.EmployeePreload,
 ) ([]model.Employee, error) {
-	return gorm.G[model.Employee](
-		r.preload(r.db, preloads...),
-	).
+	return r.queryWithPreloads(preloads...).
 		Where(generated.Employee.DepartmentID.Eq(departmentID)).
 		Find(ctx)
 }
@@ -179,9 +171,7 @@ func (r *EmployeeRepository) FindAllByPositionID(
 	preloads ...model.EmployeePreload,
 ) ([]model.Employee, error) {
 
-	return gorm.G[model.Employee](
-		r.preload(r.db, preloads...),
-	).
+	return r.queryWithPreloads(preloads...).
 		Where(generated.Employee.PositionID.Eq(positionID)).
 		Find(ctx)
 }
@@ -191,7 +181,7 @@ func (r *EmployeeRepository) ExistsByEmail(
 	ctx context.Context,
 	email string,
 ) (bool, error) {
-	count, err := gorm.G[model.Employee](r.db).
+	count, err := r.query.
 		Where(generated.Employee.Email.Eq(email)).
 		Count(ctx, "*")
 	return count > 0, err
@@ -202,7 +192,7 @@ func (r *EmployeeRepository) ExistsByNIK(
 	ctx context.Context,
 	nik string,
 ) (bool, error) {
-	count, err := gorm.G[model.Employee](r.db).
+	count, err := r.query.
 		Where(generated.Employee.NIK.Eq(nik)).
 		Count(ctx, "*")
 	return count > 0, err
@@ -213,6 +203,6 @@ func (r *EmployeeRepository) Count(
 	ctx context.Context,
 ) (int64, error) {
 
-	return gorm.G[model.Employee](r.db).
+	return r.query.
 		Count(ctx, "*")
 }

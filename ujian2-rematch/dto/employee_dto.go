@@ -1,6 +1,9 @@
 package dto
 
-import "ujian2_rematch/model"
+import (
+	"log"
+	"ujian2_rematch/model"
+)
 
 type EmployeeFilterRequest struct {
 	Search       *string               `form:"search"`
@@ -43,7 +46,7 @@ func NewEmployeeResponse(model *model.Employee) *EmployeeResponse {
 	if model == nil {
 		return nil
 	}
-
+	log.Printf("%+v", model)
 	return &EmployeeResponse{
 		ID:       model.ID,
 		NIK:      model.NIK,

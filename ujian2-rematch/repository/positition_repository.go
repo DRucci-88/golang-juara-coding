@@ -10,25 +10,25 @@ import (
 )
 
 type PositionRepository struct {
-	db *gorm.DB
+	db    *gorm.DB
+	query gorm.Interface[model.Position]
 }
 
 func (r *RepositoryManager) Position() *PositionRepository {
 	return &PositionRepository{
-		db: r.db,
+		db:    r.db,
+		query: gorm.G[model.Position](r.db),
 	}
 }
 
-func (r *PositionRepository) preload(
-	db *gorm.DB,
+func (r *PositionRepository) queryWithPreloads(
 	preloads ...model.PositionPreload,
-) *gorm.DB {
-
+) gorm.ChainInterface[model.Position] {
+	var chain gorm.ChainInterface[model.Position] = r.query.Scopes()
 	for _, preload := range preloads {
-		db = db.Preload(string(preload))
+		chain = chain.Preload(string(preload), nil)
 	}
-
-	return db
+	return chain
 }
 
 func (r *PositionRepository) Create(
@@ -75,9 +75,7 @@ func (r *PositionRepository) FindByID(
 	preloads ...model.PositionPreload,
 ) (*model.Position, error) {
 
-	position, err := gorm.G[model.Position](
-		r.preload(r.db, preloads...),
-	).
+	position, err := r.queryWithPreloads(preloads...).
 		Where(generated.Position.ID.Eq(id)).
 		First(ctx)
 
@@ -93,9 +91,7 @@ func (r *PositionRepository) FindAll(
 	preloads ...model.PositionPreload,
 ) ([]model.Position, error) {
 
-	return gorm.G[model.Position](
-		r.preload(r.db, preloads...),
-	).
+	return r.queryWithPreloads(preloads...).
 		Find(ctx)
 }
 
@@ -105,9 +101,7 @@ func (r *PositionRepository) FindByName(
 	preloads ...model.PositionPreload,
 ) (*model.Position, error) {
 
-	position, err := gorm.G[model.Position](
-		r.preload(r.db, preloads...),
-	).
+	position, err := r.queryWithPreloads(preloads...).
 		Where(generated.Position.Title.Eq(title)).
 		First(ctx)
 

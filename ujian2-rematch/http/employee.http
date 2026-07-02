@@ -7,8 +7,8 @@ Content-Type: : application/json
 
 {
     "nik": "123456789",
-    "full_name": "Emp 1",
-    "email": "emp1@gmail.com",
+    "full_name": "Emp 2",
+    "email": "emp2@gmail.com",
     "department_id": 1,
     "position_id": 1
 }
@@ -17,7 +17,10 @@ Content-Type: : application/json
 GET {{employees}}/1 HTTP/1.1
 
 ### Find All
-GET {{employees}} HTTP/1.1
+GET {{employees}}?status=SUSPENDED HTTP/1.1
+
+### Find All
+GET {{employees}}?search=1 HTTP/1.1
 
 ### Update
 PUT {{employees}}/1 HTTP/1.1
