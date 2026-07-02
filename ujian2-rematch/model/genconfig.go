@@ -10,6 +10,7 @@ var _ = genconfig.Config{
 		AttendanceStatus(""): field.String{},
 		EmployeeStatus(""):   field.String{},
 		LeaveStatus(""):      field.String{},
+		UserRole(""):         field.String{},
 	},
 	// FieldNameMap: map[string]any{
 	// 	// "status": field.String{},

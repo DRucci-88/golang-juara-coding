@@ -129,18 +129,6 @@ func (r *EmployeeRepository) FindAll(
 
 }
 
-// Find By Email
-func (r *EmployeeRepository) FindByEmail(
-	ctx context.Context,
-	email string,
-	preloads ...model.EmployeePreload,
-) (*model.Employee, error) {
-	employee, err := r.queryWithPreloads(preloads...).
-		Where(generated.Employee.Email.Eq(email)).
-		First(ctx)
-	return &employee, err
-}
-
 // Find By NIK
 func (r *EmployeeRepository) FindByNIK(
 	ctx context.Context,
@@ -174,28 +162,6 @@ func (r *EmployeeRepository) FindAllByPositionID(
 	return r.queryWithPreloads(preloads...).
 		Where(generated.Employee.PositionID.Eq(positionID)).
 		Find(ctx)
-}
-
-// Exists By Email
-func (r *EmployeeRepository) ExistsByEmail(
-	ctx context.Context,
-	email string,
-) (bool, error) {
-	count, err := r.query.
-		Where(generated.Employee.Email.Eq(email)).
-		Count(ctx, "*")
-	return count > 0, err
-}
-
-// Exists By NIK
-func (r *EmployeeRepository) ExistsByNIK(
-	ctx context.Context,
-	nik string,
-) (bool, error) {
-	count, err := r.query.
-		Where(generated.Employee.NIK.Eq(nik)).
-		Count(ctx, "*")
-	return count > 0, err
 }
 
 // Count

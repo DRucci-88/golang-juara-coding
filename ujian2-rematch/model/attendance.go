@@ -14,8 +14,8 @@ type Attendance struct {
 	Employee   *Employee `gorm:"foreignKey:EmployeeID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
 
 	Date     time.Time        `gorm:"type:date;not null"`
-	CheckIn  sql.NullTime     `gorm:"type:varchar(10)"`
-	CheckOut sql.NullTime     `gorm:"type:varchar(10)"`
+	CheckIn  sql.NullTime     `gorm:"type:time"`
+	CheckOut sql.NullTime     `gorm:"type:time"`
 	Status   AttendanceStatus `gorm:"type:varchar(10);not null"`
 }
 

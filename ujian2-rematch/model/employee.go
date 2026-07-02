@@ -11,11 +11,10 @@ type Employee struct {
 
 	NIK      string         `gorm:"type:varchar(50);not null"`
 	FullName string         `gorm:"type:varchar(100);not null"`
-	Email    string         `gorm:"type:varchar(100);not null"`
 	Status   EmployeeStatus `gorm:"type:varchar(20);default:'ACTIVE';not null"`
 
-	// UserID uint
-	// User   *User `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
+	UserID uint
+	User   *User `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
 
 	DepartmentID uint
 	Department   *Department `gorm:"foreignKey:DepartmentID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`

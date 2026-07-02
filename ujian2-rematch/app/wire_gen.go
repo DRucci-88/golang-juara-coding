@@ -17,13 +17,15 @@ import (
 func InitializedApplication() *Application {
 	db := NewDatabase()
 	repositoryManager := repository.NewRepositoryManager(db)
+	authService := service.NewAuthService(repositoryManager)
+	authHandler := handler.NewAuthHandler(authService)
 	departmentService := service.NewDepartmentService(repositoryManager)
 	departmentHandler := handler.NewDepartmentHandler(departmentService)
 	positionService := service.NewPositionService(repositoryManager)
 	positionHandler := handler.NewPositionHandler(positionService)
 	employeeService := service.NewEmployeeService(repositoryManager)
 	employeeHandler := handler.NewEmployeeHandler(employeeService)
-	engine := NewRouter(departmentHandler, positionHandler, employeeHandler)
+	engine := NewRouter(authHandler, departmentHandler, positionHandler, employeeHandler)
 	application := NewApplication(engine)
 	return application
 }

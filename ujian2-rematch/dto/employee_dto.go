@@ -16,6 +16,7 @@ type EmployeeCreateRequest struct {
 	NIK      string `json:"nik" binding:"required,max=50"`
 	FullName string `json:"full_name" binding:"required,max=100"`
 	Email    string `json:"email" binding:"required,email,max=100"`
+	Password string `json:"password" binding:"required"`
 
 	DepartmentID uint `json:"department_id" binding:"required"`
 	PositionID   uint `json:"position_id" binding:"required"`
@@ -24,7 +25,6 @@ type EmployeeCreateRequest struct {
 type EmployeeUpdateRequest struct {
 	NIK      string `json:"nik" binding:"max=50"`
 	FullName string `json:"full_name" binding:"max=100"`
-	Email    string `json:"email" binding:"email,max=100"`
 
 	DepartmentID uint `json:"department_id"`
 	PositionID   uint `json:"position_id"`
@@ -51,7 +51,7 @@ func NewEmployeeResponse(model *model.Employee) *EmployeeResponse {
 		ID:       model.ID,
 		NIK:      model.NIK,
 		FullName: model.FullName,
-		Email:    model.Email,
+		Email:    model.User.Email,
 
 		DepartmentID: model.DepartmentID,
 		Department:   NewDepartmentResponse(model.Department),

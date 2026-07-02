@@ -10,25 +10,25 @@ import (
 )
 
 type AttendanceRepository struct {
-	db *gorm.DB
+	db    *gorm.DB
+	query gorm.Interface[model.Attendance]
 }
 
 func (r *RepositoryManager) Attendance() *AttendanceRepository {
 	return &AttendanceRepository{
-		db: r.db,
+		db:    r.db,
+		query: gorm.G[model.Attendance](r.db),
 	}
 }
 
-func (r *AttendanceRepository) preload(
-	db *gorm.DB,
+func (r *AttendanceRepository) queryWithPreloads(
 	preloads ...model.AttendancePreload,
-) *gorm.DB {
-
+) gorm.ChainInterface[model.Attendance] {
+	var chain gorm.ChainInterface[model.Attendance] = r.query.Scopes()
 	for _, preload := range preloads {
-		db = db.Preload(string(preload))
+		chain = chain.Preload(string(preload), nil)
 	}
-
-	return db
+	return chain
 }
 
 func (r *AttendanceRepository) Create(
@@ -70,9 +70,7 @@ func (r *AttendanceRepository) FindByID(
 	preloads ...model.AttendancePreload,
 ) (*model.Attendance, error) {
 
-	attendance, err := gorm.G[model.Attendance](
-		r.preload(r.db, preloads...),
-	).
+	attendance, err := r.queryWithPreloads(preloads...).
 		Where(generated.Attendance.ID.Eq(id)).
 		First(ctx)
 
@@ -84,9 +82,7 @@ func (r *AttendanceRepository) FindAll(
 	preloads ...model.AttendancePreload,
 ) ([]model.Attendance, error) {
 
-	return gorm.G[model.Attendance](
-		r.preload(r.db, preloads...),
-	).
+	return r.queryWithPreloads(preloads...).
 		Find(ctx)
 }
 
@@ -96,9 +92,7 @@ func (r *AttendanceRepository) FindAllByEmployeeID(
 	preloads ...model.AttendancePreload,
 ) ([]model.Attendance, error) {
 
-	return gorm.G[model.Attendance](
-		r.preload(r.db, preloads...),
-	).
+	return r.queryWithPreloads(preloads...).
 		Where(generated.Attendance.EmployeeID.Eq(employeeID)).
 		Find(ctx)
 }
@@ -110,9 +104,7 @@ func (r *AttendanceRepository) FindByEmployeeAndDate(
 	preloads ...model.AttendancePreload,
 ) (*model.Attendance, error) {
 
-	attendance, err := gorm.G[model.Attendance](
-		r.preload(r.db, preloads...),
-	).
+	attendance, err := r.queryWithPreloads(preloads...).
 		Where(generated.Attendance.EmployeeID.Eq(employeeID)).
 		Where(generated.Attendance.Date.Eq(date)).
 		First(ctx)
@@ -126,9 +118,7 @@ func (r *AttendanceRepository) FindAllByDate(
 	preloads ...model.AttendancePreload,
 ) ([]model.Attendance, error) {
 
-	return gorm.G[model.Attendance](
-		r.preload(r.db, preloads...),
-	).
+	return r.queryWithPreloads(preloads...).
 		Where(generated.Attendance.Date.Eq(date)).
 		Find(ctx)
 }
@@ -139,9 +129,7 @@ func (r *AttendanceRepository) FindAllByStatus(
 	preloads ...model.AttendancePreload,
 ) ([]model.Attendance, error) {
 
-	return gorm.G[model.Attendance](
-		r.preload(r.db, preloads...),
-	).
+	return r.queryWithPreloads(preloads...).
 		Where(generated.Attendance.Status.Eq(string(status))).
 		Find(ctx)
 }

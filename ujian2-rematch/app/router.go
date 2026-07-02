@@ -7,6 +7,7 @@ import (
 )
 
 func NewRouter(
+	authHandler *handler.AuthHandler,
 	departmentHander *handler.DepartmentHandler,
 	positionHandler *handler.PositionHandler,
 	employeeHandler *handler.EmployeeHandler,
@@ -16,6 +17,9 @@ func NewRouter(
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "Berjalan Perfecto"})
 	})
+
+	authApi := r.Group("/auth")
+	authApi.POST("/login")
 
 	departmentApi := r.Group("/departments")
 	departmentApi.POST("", departmentHander.Create)

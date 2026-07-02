@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"ujian2_rematch/dto"
+	"ujian2_rematch/helper"
 	"ujian2_rematch/model"
 	"ujian2_rematch/repository"
 )
@@ -12,6 +13,7 @@ type EmployeeService struct {
 	employeeRepo   *repository.EmployeeRepository
 	departmentRepo *repository.DepartmentRepository
 	positionRepo   *repository.PositionRepository
+	userRepo       *repository.UserRepository
 }
 
 func NewEmployeeService(
@@ -22,6 +24,7 @@ func NewEmployeeService(
 		employeeRepo:   repo.Employee(),
 		departmentRepo: repo.Department(),
 		positionRepo:   repo.Position(),
+		userRepo:       repo.User(),
 	}
 }
 
@@ -40,18 +43,34 @@ func (s *EmployeeService) Create(
 		return nil, errDepartment
 	}
 
+	password, errPassword := helper.HashPassword(dto.Password)
+	if errPassword != nil {
+		return nil, errPassword
+	}
+
+	user := model.User{
+		Role:     model.UserRoleEmployee,
+		Email:    dto.Email,
+		Password: password,
+	}
+
+	errUser := s.userRepo.Create(ctx, &user)
+	if errUser != nil {
+		return nil, errUser
+	}
+
 	employee := model.Employee{
 		NIK:          dto.NIK,
 		FullName:     dto.FullName,
-		Email:        dto.Email,
 		Status:       model.EmployeeStatusActive,
 		DepartmentID: dto.DepartmentID,
 		PositionID:   dto.PositionID,
+		UserID:       user.ID,
 	}
 
-	err := s.employeeRepo.Create(ctx, &employee)
+	errEmp := s.employeeRepo.Create(ctx, &employee)
 
-	return &employee, err
+	return &employee, errEmp
 }
 
 func (s *EmployeeService) FindAll(
@@ -98,7 +117,6 @@ func (s *EmployeeService) Update(
 	_, err := s.employeeRepo.Update(ctx, uint(id), &model.Employee{
 		NIK:          dto.NIK,
 		FullName:     dto.FullName,
-		Email:        dto.Email,
 		Status:       model.EmployeeStatusActive,
 		DepartmentID: dto.DepartmentID,
 		PositionID:   dto.PositionID,

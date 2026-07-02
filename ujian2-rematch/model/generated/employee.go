@@ -16,8 +16,9 @@ var Employee = struct {
 	DeletedAt    field.Field[gorm.DeletedAt]
 	NIK          field.String
 	FullName     field.String
-	Email        field.String
 	Status       field.String
+	UserID       field.Number[uint]
+	User         field.Struct[model.User]
 	DepartmentID field.Number[uint]
 	Department   field.Struct[model.Department]
 	PositionID   field.Number[uint]
@@ -32,8 +33,9 @@ var Employee = struct {
 	DeletedAt:    field.Field[gorm.DeletedAt]{}.WithColumn("deleted_at"),
 	NIK:          field.String{}.WithColumn("nik"),
 	FullName:     field.String{}.WithColumn("full_name"),
-	Email:        field.String{}.WithColumn("email"),
 	Status:       field.String{}.WithColumn("status"),
+	UserID:       field.Number[uint]{}.WithColumn("user_id"),
+	User:         field.Struct[model.User]{}.WithName("User"),
 	DepartmentID: field.Number[uint]{}.WithColumn("department_id"),
 	Department:   field.Struct[model.Department]{}.WithName("Department"),
 	PositionID:   field.Number[uint]{}.WithColumn("position_id"),

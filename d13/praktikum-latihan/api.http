@@ -47,7 +47,6 @@ Content-Type: : application/json
     "password": "rucco123456789"
 }
 
-# @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJlbWFpbCI6InJ1Y2NvQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImV4cCI6MTc4MjY2NTYyNCwiaWF0IjoxNzgyNjYyMDI0fQ.CDyf_5TO69PS17FGGjNfYvZPKWxBeUQKdWvASy2hggg
 @token = {{login.response.body.token}}
 
 ### Me ADMIN

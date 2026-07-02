@@ -19,11 +19,13 @@ func InitializedApplication() *Application {
 		NewRouter,
 
 		// Handler
+		handler.NewAuthHandler,
 		handler.NewDepartmentHandler,
 		handler.NewPositionHandler,
 		handler.NewEmployeeHandler,
 
 		// Service
+		service.NewAuthService,
 		service.NewDepartmentService,
 		service.NewPositionService,
 		service.NewEmployeeService,
