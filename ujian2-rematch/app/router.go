@@ -1,12 +1,16 @@
 package app
 
 import (
+	"log"
+	"ujian2_rematch/dto"
 	"ujian2_rematch/handler"
+	"ujian2_rematch/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
 func NewRouter(
+	m *middleware.MiddlewareManager,
 	authHandler *handler.AuthHandler,
 	departmentHander *handler.DepartmentHandler,
 	positionHandler *handler.PositionHandler,
@@ -19,6 +23,16 @@ func NewRouter(
 	})
 
 	authApi := r.Group("/auth")
+	authApi.GET("/jwt", m.JWT, func(ctx *gin.Context) {
+		log.Println("auth / jwt")
+		authContext, exist := ctx.Get("auth")
+		if !exist {
+			ctx.JSON(401, gin.H{"error": "Unauthorized"})
+			return
+		}
+		auth := authContext.(*dto.AuthContext)
+		ctx.JSON(200, gin.H{"data": auth})
+	})
 	authApi.POST("/login", authHandler.Login)
 
 	departmentApi := r.Group("/departments")

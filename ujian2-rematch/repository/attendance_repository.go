@@ -35,7 +35,6 @@ func (r *AttendanceRepository) Create(
 	ctx context.Context,
 	attendance *model.Attendance,
 ) error {
-
 	return gorm.G[model.Attendance](r.db).
 		Create(ctx, attendance)
 }

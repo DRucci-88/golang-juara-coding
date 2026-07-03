@@ -2,6 +2,7 @@ package helper
 
 import (
 	"time"
+	"ujian2_rematch/dto"
 	"ujian2_rematch/model"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -25,7 +26,7 @@ func GenerateJWT(
 	email string,
 	role model.UserRole,
 ) (string, error) {
-	claims := model.JWTClaims{
+	claims := dto.JWTClaims{
 		UserID:     userId,
 		EmployeeID: employeeId,
 		Email:      email,
@@ -37,5 +38,5 @@ func GenerateJWT(
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(model.JWTSecretKey)
+	return token.SignedString(dto.JWTSecretKey)
 }

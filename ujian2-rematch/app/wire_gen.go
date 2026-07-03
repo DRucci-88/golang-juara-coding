@@ -8,6 +8,7 @@ package app
 
 import (
 	"ujian2_rematch/handler"
+	"ujian2_rematch/middleware"
 	"ujian2_rematch/repository"
 	"ujian2_rematch/service"
 )
@@ -17,6 +18,7 @@ import (
 func InitializedApplication() *Application {
 	db := NewDatabase()
 	repositoryManager := repository.NewRepositoryManager(db)
+	middlewareManager := middleware.NewMiddlewareManager(repositoryManager)
 	authService := service.NewAuthService(repositoryManager)
 	authHandler := handler.NewAuthHandler(authService)
 	departmentService := service.NewDepartmentService(repositoryManager)
@@ -25,7 +27,7 @@ func InitializedApplication() *Application {
 	positionHandler := handler.NewPositionHandler(positionService)
 	employeeService := service.NewEmployeeService(repositoryManager)
 	employeeHandler := handler.NewEmployeeHandler(employeeService)
-	engine := NewRouter(authHandler, departmentHandler, positionHandler, employeeHandler)
+	engine := NewRouter(middlewareManager, authHandler, departmentHandler, positionHandler, employeeHandler)
 	application := NewApplication(engine)
 	return application
 }

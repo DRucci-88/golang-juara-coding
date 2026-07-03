@@ -26,6 +26,7 @@ func NewDatabase() *gorm.DB {
 		&model.Leave{},
 		&model.Position{},
 		&model.Salary{},
+		&model.BlackListedToken{},
 	); err != nil {
 		panic("Auto Migrate Failed " + err.Error())
 	}

@@ -5,6 +5,7 @@ package app
 
 import (
 	"ujian2_rematch/handler"
+	"ujian2_rematch/middleware"
 	"ujian2_rematch/repository"
 	"ujian2_rematch/service"
 
@@ -17,6 +18,9 @@ func InitializedApplication() *Application {
 		NewApplication,
 		NewDatabase,
 		NewRouter,
+
+		// Middleware
+		middleware.NewMiddlewareManager,
 
 		// Handler
 		handler.NewAuthHandler,
