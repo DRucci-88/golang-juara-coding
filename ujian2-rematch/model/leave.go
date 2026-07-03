@@ -1,7 +1,7 @@
 package model
 
 import (
-	"database/sql"
+	"errors"
 	"time"
 
 	"gorm.io/gorm"
@@ -13,10 +13,10 @@ type Leave struct {
 	EmployeeID uint
 	Employee   *Employee `gorm:"foreignKey:EmployeeID;references:ID;constraint:OnUpdate:CASCAFE,OnDelete:RESTRICT"`
 
-	StartDate time.Time      `gorm:"type:date;not null"`
-	EndDate   time.Time      `gorm:"type:date;not null"`
-	Reason    sql.NullString `gorm:"type:varchar(255)"`
-	Status    LeaveStatus    `gorm:"type:varchar(20);default:'PENDING'"`
+	StartDate time.Time   `gorm:"type:date;not null"`
+	EndDate   time.Time   `gorm:"type:date;not null"`
+	Reason    string      `gorm:"type:varchar(255)"`
+	Status    LeaveStatus `gorm:"type:varchar(20);default:'PENDING'"`
 }
 
 type LeaveStatus string
@@ -31,4 +31,9 @@ type LeavePreload string
 
 const (
 	LeavePreloadEmployee LeavePreload = "Employee"
+)
+
+var (
+	ErrLeaveNotFound    = errors.New("Leave Not Found")
+	ErrLeaveOverlapping = errors.New("Leave Overlapping")
 )

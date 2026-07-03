@@ -32,6 +32,7 @@ func InitializedApplication() *Application {
 		handler.NewPositionHandler,
 		handler.NewEmployeeHandler,
 		handler.NewAttendanceHandler,
+		handler.NewLeaveHandler,
 
 		// Service
 		service.NewAuthService,
@@ -39,6 +40,7 @@ func InitializedApplication() *Application {
 		service.NewPositionService,
 		service.NewEmployeeService,
 		service.NewAttendanceService,
+		service.NewLeaveService,
 
 		// Repository Manager
 		repository.NewRepositoryManager,

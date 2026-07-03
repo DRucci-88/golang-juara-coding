@@ -1,0 +1,25 @@
+info:
+  name: Employee Create Leave
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseURL}}/leaves"
+  body:
+    type: json
+    data: |-
+      {
+        "start_date": "2026-07-02T00:00:00Z",
+        "end_date": "2026-07-23T00:00:00Z",
+        "reason": "Mau Kencing"
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

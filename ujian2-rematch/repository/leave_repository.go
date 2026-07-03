@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"time"
 	"ujian2_rematch/model"
 	"ujian2_rematch/model/generated"
@@ -10,25 +11,25 @@ import (
 )
 
 type LeaveRepository struct {
-	db *gorm.DB
+	db    *gorm.DB
+	query gorm.Interface[model.Leave]
 }
 
 func (r *RepositoryManager) Leave() *LeaveRepository {
 	return &LeaveRepository{
-		db: r.db,
+		db:    r.db,
+		query: gorm.G[model.Leave](r.db),
 	}
 }
 
-func (r *LeaveRepository) preload(
-	db *gorm.DB,
+func (r *LeaveRepository) queryWithPreloads(
 	preloads ...model.LeavePreload,
-) *gorm.DB {
-
+) gorm.ChainInterface[model.Leave] {
+	var chain gorm.ChainInterface[model.Leave] = r.query.Scopes()
 	for _, preload := range preloads {
-		db = db.Preload(string(preload))
+		chain = chain.Preload(string(preload), nil)
 	}
-
-	return db
+	return chain
 }
 
 func (r *LeaveRepository) Create(
@@ -36,7 +37,7 @@ func (r *LeaveRepository) Create(
 	leave *model.Leave,
 ) error {
 
-	return gorm.G[model.Leave](r.db).
+	return r.query.
 		Create(ctx, leave)
 }
 
@@ -45,7 +46,7 @@ func (r *LeaveRepository) Update(
 	leave *model.Leave,
 ) error {
 
-	_, err := gorm.G[model.Leave](r.db).
+	_, err := r.query.
 		Where(generated.Leave.ID.Eq(leave.ID)).
 		Updates(ctx, *leave)
 
@@ -57,7 +58,7 @@ func (r *LeaveRepository) Delete(
 	id uint,
 ) error {
 
-	_, err := gorm.G[model.Leave](r.db).
+	_, err := r.query.
 		Where(generated.Leave.ID.Eq(id)).
 		Delete(ctx)
 
@@ -70,9 +71,7 @@ func (r *LeaveRepository) FindByID(
 	preloads ...model.LeavePreload,
 ) (*model.Leave, error) {
 
-	leave, err := gorm.G[model.Leave](
-		r.preload(r.db, preloads...),
-	).
+	leave, err := r.queryWithPreloads(preloads...).
 		Where(generated.Leave.ID.Eq(id)).
 		First(ctx)
 
@@ -84,98 +83,26 @@ func (r *LeaveRepository) FindAll(
 	preloads ...model.LeavePreload,
 ) ([]model.Leave, error) {
 
-	return gorm.G[model.Leave](
-		r.preload(r.db, preloads...),
-	).
+	return r.queryWithPreloads(preloads...).
 		Find(ctx)
 }
 
-func (r *LeaveRepository) FindAllByEmployeeID(
-	ctx context.Context,
-	employeeID uint,
-	preloads ...model.LeavePreload,
-) ([]model.Leave, error) {
-
-	return gorm.G[model.Leave](
-		r.preload(r.db, preloads...),
-	).
-		Where(generated.Leave.EmployeeID.Eq(employeeID)).
-		Find(ctx)
-}
-
-func (r *LeaveRepository) FindAllByStatus(
-	ctx context.Context,
-	status model.LeaveStatus,
-	preloads ...model.LeavePreload,
-) ([]model.Leave, error) {
-
-	return gorm.G[model.Leave](
-		r.preload(r.db, preloads...),
-	).
-		Where(generated.Leave.Status.Eq(string(status))).
-		Find(ctx)
-}
-
-func (r *LeaveRepository) FindAllByEmployeeAndStatus(
-	ctx context.Context,
-	employeeID uint,
-	status model.LeaveStatus,
-	preloads ...model.LeavePreload,
-) ([]model.Leave, error) {
-
-	return gorm.G[model.Leave](
-		r.preload(r.db, preloads...),
-	).
-		Where(generated.Leave.EmployeeID.Eq(employeeID)).
-		Where(generated.Leave.Status.Eq(string(status))).
-		Find(ctx)
-}
-
-func (r *LeaveRepository) FindAllByDateRange(
-	ctx context.Context,
-	startDate time.Time,
-	endDate time.Time,
-	preloads ...model.LeavePreload,
-) ([]model.Leave, error) {
-
-	return gorm.G[model.Leave](
-		r.preload(r.db, preloads...),
-	).
-		Where(generated.Leave.StartDate.Gte(startDate)).
-		Where(generated.Leave.EndDate.Lte(endDate)).
-		Find(ctx)
-}
-
-func (r *LeaveRepository) ExistsOverlappingLeave(
+func (r *LeaveRepository) FindOverlappingLeave(
 	ctx context.Context,
 	employeeID uint,
 	startDate time.Time,
 	endDate time.Time,
-) (bool, error) {
+) (*model.Leave, error) {
 
-	count, err := gorm.G[model.Leave](r.db).
+	leave, err := gorm.G[model.Leave](r.db).
 		Where(generated.Leave.EmployeeID.Eq(employeeID)).
 		Where(generated.Leave.StartDate.Lte(endDate)).
 		Where(generated.Leave.EndDate.Gte(startDate)).
-		Count(ctx, "*")
+		First(ctx)
 
-	return count > 0, err
-}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, model.ErrEmployeeNotFound
+	}
 
-func (r *LeaveRepository) Count(
-	ctx context.Context,
-) (int64, error) {
-
-	return gorm.G[model.Leave](r.db).
-		Count(ctx, "*")
-}
-
-func (r *LeaveRepository) CountByStatus(
-	ctx context.Context,
-	status model.LeaveStatus,
-) (int64, error) {
-
-	return gorm.G[model.Leave](r.db).
-		Where(generated.Leave.Status.Eq(string(status))).
-		Count(ctx, "*")
+	return &leave, err
 }

@@ -3,7 +3,6 @@
 package generated
 
 import (
-	"database/sql"
 	"ujian2_rematch/model"
 
 	"gorm.io/cli/gorm/field"
@@ -19,7 +18,7 @@ var Leave = struct {
 	Employee   field.Struct[model.Employee]
 	StartDate  field.Time
 	EndDate    field.Time
-	Reason     field.Field[sql.NullString]
+	Reason     field.String
 	Status     field.String
 }{
 	ID:         field.Number[uint]{}.WithColumn("id"),
@@ -30,6 +29,6 @@ var Leave = struct {
 	Employee:   field.Struct[model.Employee]{}.WithName("Employee"),
 	StartDate:  field.Time{}.WithColumn("start_date"),
 	EndDate:    field.Time{}.WithColumn("end_date"),
-	Reason:     field.Field[sql.NullString]{}.WithColumn("reason"),
+	Reason:     field.String{}.WithColumn("reason"),
 	Status:     field.String{}.WithColumn("status"),
 }
