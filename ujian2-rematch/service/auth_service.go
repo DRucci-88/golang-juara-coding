@@ -9,16 +9,18 @@ import (
 )
 
 type AuthService struct {
-	repo     *repository.RepositoryManager
-	userRepo *repository.UserRepository
+	repo                 *repository.RepositoryManager
+	userRepo             *repository.UserRepository
+	blackListedTokenRepo *repository.BlackListedTokenRepository
 }
 
 func NewAuthService(
 	repo *repository.RepositoryManager,
 ) *AuthService {
 	return &AuthService{
-		repo:     repo,
-		userRepo: repo.User(),
+		repo:                 repo,
+		userRepo:             repo.User(),
+		blackListedTokenRepo: repo.BlackListedToken(),
 	}
 }
 
@@ -43,4 +45,15 @@ func (s *AuthService) Login(
 	}
 
 	return &token, err
+}
+
+func (s *AuthService) Logout(
+	ctx context.Context,
+	authContext *dto.AuthContext,
+) error {
+	blacklistedToken := &model.BlackListedToken{
+		TokenString: authContext.Token,
+		ExpiredAt:   authContext.TokenExpiredAt,
+	}
+	return s.blackListedTokenRepo.Create(ctx, blacklistedToken)
 }

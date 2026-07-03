@@ -36,3 +36,29 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": token})
 }
+
+func (h *AuthHandler) Logout(c *gin.Context) {
+	authContextValue, exist := c.Get("auth")
+
+	if !exist {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "akses tidak sah",
+			"error":   "Unauthorized",
+		})
+	}
+
+	authContext := authContextValue.(*dto.AuthContext)
+
+	err := h.authService.Logout(c.Request.Context(), authContext)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Logout gagal",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User logged out successfully",
+	})
+}

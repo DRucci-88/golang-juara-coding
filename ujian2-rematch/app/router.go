@@ -34,6 +34,7 @@ func NewRouter(
 		ctx.JSON(200, gin.H{"data": auth})
 	})
 	authApi.POST("/login", authHandler.Login)
+	authApi.POST("/logout", m.JWT, authHandler.Logout)
 
 	departmentApi := r.Group("/departments")
 	departmentApi.POST("", departmentHander.Create)
