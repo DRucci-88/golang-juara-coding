@@ -8,6 +8,7 @@ import (
 	"ujian2_rematch/middleware"
 	"ujian2_rematch/repository"
 	"ujian2_rematch/service"
+	"ujian2_rematch/worker"
 
 	"github.com/google/wire"
 )
@@ -21,6 +22,9 @@ func InitializedApplication() *Application {
 
 		// Middleware
 		middleware.NewMiddlewareManager,
+
+		// Worker
+		worker.NewTokenCleanupWorker,
 
 		// Handler
 		handler.NewAuthHandler,

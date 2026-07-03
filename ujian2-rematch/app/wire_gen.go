@@ -11,6 +11,7 @@ import (
 	"ujian2_rematch/middleware"
 	"ujian2_rematch/repository"
 	"ujian2_rematch/service"
+	"ujian2_rematch/worker"
 )
 
 // Injectors from wire.go:
@@ -28,6 +29,7 @@ func InitializedApplication() *Application {
 	employeeService := service.NewEmployeeService(repositoryManager)
 	employeeHandler := handler.NewEmployeeHandler(employeeService)
 	engine := NewRouter(middlewareManager, authHandler, departmentHandler, positionHandler, employeeHandler)
-	application := NewApplication(engine)
+	tokenCleanupWorker := worker.NewTokenCleanupWorker(repositoryManager)
+	application := NewApplication(engine, tokenCleanupWorker)
 	return application
 }
