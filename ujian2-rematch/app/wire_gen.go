@@ -28,7 +28,9 @@ func InitializedApplication() *Application {
 	positionHandler := handler.NewPositionHandler(positionService)
 	employeeService := service.NewEmployeeService(repositoryManager)
 	employeeHandler := handler.NewEmployeeHandler(employeeService)
-	engine := NewRouter(middlewareManager, authHandler, departmentHandler, positionHandler, employeeHandler)
+	attendanceService := service.NewAttendanceService(repositoryManager)
+	attendanceHandler := handler.NewAttendanceHandler(attendanceService)
+	engine := NewRouter(middlewareManager, authHandler, departmentHandler, positionHandler, employeeHandler, attendanceHandler)
 	tokenCleanupWorker := worker.NewTokenCleanupWorker(repositoryManager)
 	application := NewApplication(engine, tokenCleanupWorker)
 	return application

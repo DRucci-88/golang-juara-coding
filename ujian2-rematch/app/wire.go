@@ -31,12 +31,14 @@ func InitializedApplication() *Application {
 		handler.NewDepartmentHandler,
 		handler.NewPositionHandler,
 		handler.NewEmployeeHandler,
+		handler.NewAttendanceHandler,
 
 		// Service
 		service.NewAuthService,
 		service.NewDepartmentService,
 		service.NewPositionService,
 		service.NewEmployeeService,
+		service.NewAttendanceService,
 
 		// Repository Manager
 		repository.NewRepositoryManager,

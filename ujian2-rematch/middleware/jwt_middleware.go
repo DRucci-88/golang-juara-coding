@@ -55,6 +55,7 @@ func NewJWTMiddleware(
 
 		authContext := &dto.AuthContext{
 			UserID:         claims.UserID,
+			EmployeeID:     claims.EmployeeID,
 			Email:          claims.Email,
 			Role:           claims.Role,
 			Token:          tokenString,

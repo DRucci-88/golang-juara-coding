@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"time"
 	"ujian2_rematch/model"
 	"ujian2_rematch/model/generated"
@@ -31,12 +32,55 @@ func (r *AttendanceRepository) queryWithPreloads(
 	return chain
 }
 
-func (r *AttendanceRepository) Create(
+func (r *AttendanceRepository) CreateAndCheckIn(
 	ctx context.Context,
 	attendance *model.Attendance,
 ) error {
-	return gorm.G[model.Attendance](r.db).
+	return r.query.
 		Create(ctx, attendance)
+}
+
+func (r *AttendanceRepository) CheckOut(
+	ctx context.Context,
+	employeeID uint,
+) error {
+	attendance, err := r.FindTodayAttendance(ctx, employeeID)
+	if err != nil {
+		return nil
+	}
+	_, err = r.query.
+		Where(generated.Attendance.ID.Eq(attendance.ID)).
+		Updates(ctx, *attendance)
+	return err
+}
+
+func (r *AttendanceRepository) FindTodayAttendance(
+	ctx context.Context,
+	employeeID uint,
+	preloads ...model.AttendancePreload,
+) (*model.Attendance, error) {
+
+	today := time.Now()
+
+	today = time.Date(
+		today.Year(),
+		today.Month(),
+		today.Day(),
+		0, 0, 0, 0,
+		today.Location(),
+	)
+
+	atteddance, err := r.queryWithPreloads(preloads...).
+		Where(generated.Attendance.EmployeeID.Eq(employeeID)).
+		// Where(generated.Attendance.Date.EqExpr(clause.Expr{SQL: "CURRENT_DATE"})).
+		Where(generated.Attendance.Date.Eq(today)).
+		First(ctx)
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, model.ErrAttendanceNotFound
+	}
+
+	return &atteddance, err
 }
 
 func (r *AttendanceRepository) Update(
@@ -44,7 +88,7 @@ func (r *AttendanceRepository) Update(
 	attendance *model.Attendance,
 ) error {
 
-	_, err := gorm.G[model.Attendance](r.db).
+	_, err := r.query.
 		Where(generated.Attendance.ID.Eq(attendance.ID)).
 		Updates(ctx, *attendance)
 
@@ -56,7 +100,7 @@ func (r *AttendanceRepository) Delete(
 	id uint,
 ) error {
 
-	_, err := gorm.G[model.Attendance](r.db).
+	_, err := r.query.
 		Where(generated.Attendance.ID.Eq(id)).
 		Delete(ctx)
 
@@ -84,62 +128,13 @@ func (r *AttendanceRepository) FindAll(
 	return r.queryWithPreloads(preloads...).
 		Find(ctx)
 }
-
-func (r *AttendanceRepository) FindAllByEmployeeID(
-	ctx context.Context,
-	employeeID uint,
-	preloads ...model.AttendancePreload,
-) ([]model.Attendance, error) {
-
-	return r.queryWithPreloads(preloads...).
-		Where(generated.Attendance.EmployeeID.Eq(employeeID)).
-		Find(ctx)
-}
-
-func (r *AttendanceRepository) FindByEmployeeAndDate(
-	ctx context.Context,
-	employeeID uint,
-	date time.Time,
-	preloads ...model.AttendancePreload,
-) (*model.Attendance, error) {
-
-	attendance, err := r.queryWithPreloads(preloads...).
-		Where(generated.Attendance.EmployeeID.Eq(employeeID)).
-		Where(generated.Attendance.Date.Eq(date)).
-		First(ctx)
-
-	return &attendance, err
-}
-
-func (r *AttendanceRepository) FindAllByDate(
-	ctx context.Context,
-	date time.Time,
-	preloads ...model.AttendancePreload,
-) ([]model.Attendance, error) {
-
-	return r.queryWithPreloads(preloads...).
-		Where(generated.Attendance.Date.Eq(date)).
-		Find(ctx)
-}
-
-func (r *AttendanceRepository) FindAllByStatus(
-	ctx context.Context,
-	status model.AttendanceStatus,
-	preloads ...model.AttendancePreload,
-) ([]model.Attendance, error) {
-
-	return r.queryWithPreloads(preloads...).
-		Where(generated.Attendance.Status.Eq(string(status))).
-		Find(ctx)
-}
-
 func (r *AttendanceRepository) ExistsByEmployeeAndDate(
 	ctx context.Context,
 	employeeID uint,
 	date time.Time,
 ) (bool, error) {
 
-	count, err := gorm.G[model.Attendance](r.db).
+	count, err := r.query.
 		Where(generated.Attendance.EmployeeID.Eq(employeeID)).
 		Where(generated.Attendance.Date.Eq(date)).
 		Count(ctx, "*")
@@ -151,6 +146,6 @@ func (r *AttendanceRepository) Count(
 	ctx context.Context,
 ) (int64, error) {
 
-	return gorm.G[model.Attendance](r.db).
+	return r.query.
 		Count(ctx, "*")
 }

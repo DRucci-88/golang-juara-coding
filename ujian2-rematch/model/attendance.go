@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 
 	"gorm.io/gorm"
@@ -31,4 +32,8 @@ type AttendancePreload string
 
 const (
 	AttendancePreloadEmployee AttendancePreload = "Employee"
+)
+
+var (
+	ErrAttendanceNotFound = errors.New("Attendance Not Found")
 )

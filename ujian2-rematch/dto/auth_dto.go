@@ -19,6 +19,7 @@ type JWTClaims struct {
 
 type AuthContext struct {
 	UserID         uint           `json:"user_id"`
+	EmployeeID     *uint          `json:"employee_id"`
 	Email          string         `json:"email"`
 	Role           model.UserRole `json:"role"`
 	Token          string         `json:"token"`

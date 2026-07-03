@@ -15,6 +15,7 @@ func NewRouter(
 	departmentHander *handler.DepartmentHandler,
 	positionHandler *handler.PositionHandler,
 	employeeHandler *handler.EmployeeHandler,
+	attendanceHandler *handler.AttendanceHandler,
 ) *gin.Engine {
 	r := gin.Default()
 
@@ -55,6 +56,10 @@ func NewRouter(
 	employeeApi.GET("/:id", employeeHandler.FindByID)
 	employeeApi.GET("", employeeHandler.FindAll)
 	employeeApi.PUT("/:id", employeeHandler.Update)
+
+	attendanceApi := r.Group("/attendances", m.JWT)
+	attendanceApi.POST("/check-in", attendanceHandler.CheckIn)
+	attendanceApi.POST("/check-out", attendanceHandler.CheckOut)
 
 	return r
 }
