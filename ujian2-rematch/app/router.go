@@ -64,6 +64,7 @@ func NewRouter(
 
 	leaveApi := r.Group("/leaves", m.JWT)
 	leaveApi.POST("", leaveHandler.Create)
+	leaveApi.POST("/:id/approve", leaveHandler.Approval)
 
 	return r
 }

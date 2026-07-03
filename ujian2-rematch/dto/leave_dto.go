@@ -13,6 +13,10 @@ type LeaveCreateRequest struct {
 	Reason    string    `json:"reason" binding:"required,max=255"`
 }
 
+type LeaveApprovalRequest struct {
+	Status model.LeaveStatus `json:"status"`
+}
+
 func LeaveRequestValidation(sl validator.StructLevel) {
 	req := sl.Current().Interface().(LeaveCreateRequest)
 
@@ -34,6 +38,7 @@ type LeaveResponse struct {
 	StartDate  time.Time         `json:"start_date"`
 	EndDate    time.Time         `json:"end_date"`
 	Reason     string            `json:"reason"`
+	Status     model.LeaveStatus `json:"status"`
 }
 
 func NewLeaveResponse(model *model.Leave) *LeaveResponse {
@@ -48,6 +53,7 @@ func NewLeaveResponse(model *model.Leave) *LeaveResponse {
 		StartDate:  model.StartDate,
 		EndDate:    model.EndDate,
 		Reason:     model.Reason,
+		Status:     model.Status,
 	}
 }
 

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 	"ujian2_rematch/dto"
 	"ujian2_rematch/model"
 	"ujian2_rematch/service"
@@ -48,6 +49,30 @@ func (h *LeaveHandler) Create(c *gin.Context) {
 	}
 
 	leave, err := h.leaveService.Create(c.Request.Context(), employeeID, &req)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	res := dto.NewLeaveResponse(leave)
+	c.JSON(http.StatusCreated, gin.H{"data": res})
+}
+
+func (h *LeaveHandler) Approval(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+		return
+	}
+	var req dto.LeaveApprovalRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+		return
+	}
+
+	leave, err := h.leaveService.Approval(c.Request.Context(), id, &req)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

@@ -34,6 +34,8 @@ const (
 )
 
 var (
-	ErrLeaveNotFound    = errors.New("Leave Not Found")
-	ErrLeaveOverlapping = errors.New("Leave Overlapping")
+	ErrLeaveNotFound        = errors.New("Leave Not Found")
+	ErrLeaveOverlapping     = errors.New("Leave Overlapping")
+	ErrLeaveAlreadyApproved = errors.New("Leave Already Approved")
+	ErrLeaveAlreadyRejected = errors.New("Leave Already Rejected")
 )

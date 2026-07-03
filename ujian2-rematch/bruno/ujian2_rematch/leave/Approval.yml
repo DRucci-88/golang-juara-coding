@@ -1,0 +1,27 @@
+info:
+  name: Approval
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseURL}}/leaves/:id/approve"
+  params:
+    - name: id
+      value: "1"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "status": "REJECTED"
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

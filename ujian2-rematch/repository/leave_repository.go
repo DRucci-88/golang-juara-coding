@@ -75,6 +75,10 @@ func (r *LeaveRepository) FindByID(
 		Where(generated.Leave.ID.Eq(id)).
 		First(ctx)
 
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, model.ErrLeaveNotFound
+	}
+
 	return &leave, err
 }
 
@@ -101,7 +105,7 @@ func (r *LeaveRepository) FindOverlappingLeave(
 		First(ctx)
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, model.ErrEmployeeNotFound
+		return nil, model.ErrLeaveNotFound
 	}
 
 	return &leave, err

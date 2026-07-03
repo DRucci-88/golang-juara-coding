@@ -48,3 +48,28 @@ func (s *LeaveService) Create(
 	}
 	return leave, err
 }
+
+func (s *LeaveService) Approval(
+	ctx context.Context,
+	leaveID int,
+	dto *dto.LeaveApprovalRequest,
+) (*model.Leave, error) {
+	leave, err := s.leaveRepo.FindByID(ctx, uint(leaveID))
+	if err != nil {
+		return nil, err
+	}
+
+	switch leave.Status {
+	case model.LeaveStatusApproved:
+		return nil, model.ErrLeaveAlreadyApproved
+	case model.LeaveStatusRejected:
+		return nil, model.ErrLeaveAlreadyRejected
+	}
+
+	leave.Status = dto.Status
+	if err := s.leaveRepo.Update(ctx, leave); err != nil {
+		return nil, err
+	}
+
+	return leave, err
+}
