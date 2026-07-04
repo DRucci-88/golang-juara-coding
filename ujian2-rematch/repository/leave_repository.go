@@ -98,7 +98,7 @@ func (r *LeaveRepository) FindOverlappingLeave(
 	endDate time.Time,
 ) (*model.Leave, error) {
 
-	leave, err := gorm.G[model.Leave](r.db).
+	leave, err := r.query.
 		Where(generated.Leave.EmployeeID.Eq(employeeID)).
 		Where(generated.Leave.StartDate.Lte(endDate)).
 		Where(generated.Leave.EndDate.Gte(startDate)).
@@ -109,4 +109,19 @@ func (r *LeaveRepository) FindOverlappingLeave(
 	}
 
 	return &leave, err
+}
+
+func (r *LeaveRepository) CountBetweenDateAndStatus(
+	ctx context.Context,
+	employeeID uint,
+	startDate time.Time,
+	endDate time.Time,
+	status model.LeaveStatus,
+) (int64, error) {
+	return r.query.
+		Where(generated.Leave.EmployeeID.Eq(employeeID)).
+		Where(generated.Leave.StartDate.Lte(endDate)).
+		Where(generated.Leave.EndDate.Gte(startDate)).
+		Where(generated.Leave.Status.Eq(string(status))).
+		Count(ctx, "*")
 }

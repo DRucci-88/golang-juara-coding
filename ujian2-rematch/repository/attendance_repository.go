@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"time"
+	"ujian2_rematch/dto"
 	"ujian2_rematch/model"
 	"ujian2_rematch/model/generated"
 
@@ -148,4 +149,50 @@ func (r *AttendanceRepository) Count(
 
 	return r.query.
 		Count(ctx, "*")
+}
+
+func (r *AttendanceRepository) SummaryForPayroll(
+	ctx context.Context,
+	startDate time.Time,
+	endDate time.Time,
+	employeeID uint,
+) (*dto.AttendanceSummary, error) {
+
+	summary := &dto.AttendanceSummary{}
+
+	attendances, err := r.query.
+		Where(generated.Attendance.EmployeeID.Eq(employeeID)).
+		Where(generated.Attendance.Date.Gte(startDate)).
+		Where(generated.Attendance.Date.Lt(endDate)).
+		Find(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for _, attendance := range attendances {
+		switch attendance.Status {
+		case model.AttendanceStatusPresent:
+			summary.Present++
+		case model.AttendanceStatusLate:
+			summary.Late++
+		case model.AttendanceStatusAbsent:
+			summary.Absent++
+		}
+	}
+
+	// TODO nanti di coba
+	// err := r.query.
+	// 	Where(generated.Attendance.EmployeeID.Eq(employeeID)).
+	// 	Where(generated.Attendance.Date.Gte(startDate)).
+	// 	Where(generated.Attendance.Date.Lt(endDate)).
+	// 	Select(`
+	// 	SUM(CASE WHEN status = 'PRESENT' THEN 1 ELSE 0 END) AS present,
+	// 	SUM(CASE WHEN status = 'LATE' THEN 1 ELSE 0 END) AS late,
+	// 	SUM(CASE WHEN status = 'ABSENT' THEN 1 ELSE 0 END) AS absent
+	// `).
+	// 	Scan(ctx, &summary)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	return summary, err
 }

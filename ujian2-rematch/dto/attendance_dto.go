@@ -5,6 +5,12 @@ import (
 	"ujian2_rematch/model"
 )
 
+type AttendanceSummary struct {
+	Present int
+	Late    int
+	Absent  int
+}
+
 type AttendanceResponse struct {
 	ID uint `json:"id"`
 

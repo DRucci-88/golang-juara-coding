@@ -3,11 +3,13 @@ package repository
 import (
 	"context"
 	"errors"
+	"time"
 	"ujian2_rematch/dto"
 	"ujian2_rematch/model"
 	"ujian2_rematch/model/generated"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type EmployeeRepository struct {
@@ -126,7 +128,6 @@ func (r *EmployeeRepository) FindAll(
 	}
 
 	return chain.Find(ctx)
-
 }
 
 // Find By NIK
@@ -172,3 +173,66 @@ func (r *EmployeeRepository) Count(
 	return r.query.
 		Count(ctx, "*")
 }
+
+// TODO nanti di hapus
+func (r *EmployeeRepository) ProcessInBatches(
+	ctx context.Context,
+	batchSize int,
+	handler func(data []model.Employee, batch int) error,
+) error {
+	db := r.db.Session(&gorm.Session{
+		Context: ctx,
+	})
+	query := gorm.G[model.Employee](db)
+	return query.
+		Preload(
+			string(model.EmployeePreloadPosition),
+			func(db gorm.PreloadBuilder) error {
+				db.Select(generated.Position.BaseSalary.Column().Name)
+				return nil
+			}).
+		Where(generated.Employee.Status.Eq(string(model.EmployeeStatusActive))).
+		FindInBatches(ctx, batchSize, handler)
+}
+
+func (r *EmployeeRepository) ProcessWithoutPayrollInBatches(
+	ctx context.Context,
+	batchSize int,
+	period time.Time,
+	handler func(data []model.Employee, batch int) error,
+) error {
+	db := r.db.Session(&gorm.Session{
+		Context: ctx,
+	})
+	salarySubQuery := gorm.G[model.Salary](db).
+		// Where(generated.Salary.EmployeeID.Expr("= employees.id")).
+		Where(generated.Salary.EmployeeID.EqExpr(clause.Eq{Value: "employees.id"})).
+		Where(generated.Salary.Period.Eq(period)).
+		Select("1")
+
+	generated.Salary.EmployeeID.EqExpr(clause.Eq{Value: "employees.id"})
+
+	query := gorm.G[model.Employee](db)
+	return query.
+		Preload(
+			string(model.EmployeePreloadPosition),
+			func(db gorm.PreloadBuilder) error {
+				db.Select(generated.Position.BaseSalary.Column().Name)
+				return nil
+			}).
+		Where(generated.Employee.Status.Eq(string(model.EmployeeStatusActive))).
+		Not("EXISTS (?)", salarySubQuery).
+		FindInBatches(ctx, batchSize, handler)
+}
+
+// SELECT *
+// FROM employees e
+// WHERE NOT EXISTS (
+
+//     SELECT 1
+//     FROM salaries s
+
+//     WHERE s.employee_id = e.id
+//       AND s.period = '2026-07-01'
+
+// )

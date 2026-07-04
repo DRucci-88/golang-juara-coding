@@ -45,8 +45,3 @@ func (r *RepositoryManager) Transaction(
 			return fn(txRepo)
 		})
 }
-
-// Execute repository without starting a transaction.
-func (r *RepositoryManager) WithContext(ctx context.Context) *gorm.DB {
-	return r.db.WithContext(ctx)
-}

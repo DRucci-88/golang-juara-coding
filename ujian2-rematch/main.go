@@ -16,6 +16,7 @@ func main() {
 			dto.LeaveRequestValidation,
 			dto.LeaveCreateRequest{},
 		)
+		v.RegisterValidation("payroll_period", dto.SalaryPayrollPeriodValidation)
 	}
 
 	application := app.InitializedApplication()

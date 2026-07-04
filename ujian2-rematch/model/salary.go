@@ -9,10 +9,10 @@ import (
 type Salary struct {
 	gorm.Model
 
-	EmployeeID uint
+	EmployeeID uint      `gorm:"uniqueIndex:uk_salary_period"`
 	Employee   *Employee `gorm:"foreignKey:EmployeeID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
 
-	Period      time.Time `gorm:"type:varchar(10);not null"`
+	Period      time.Time `gorm:"type:date;not null;uniqueIndex:uk_salary_period"`
 	BasicSalary float64   `gorm:"type:numeric(12,2);not null"`
 	Allowance   float64   `gorm:"type:numeric(12,2);not null"`
 	Deductions  float64   `gorm:"type:numeric(12,2);not null"`
