@@ -2,6 +2,7 @@ package app
 
 import (
 	"ujian2_rematch/model"
+	"ujian2_rematch/seeder"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -30,6 +31,8 @@ func NewDatabase() *gorm.DB {
 	); err != nil {
 		panic("Auto Migrate Failed " + err.Error())
 	}
+
+	seeder.Run(db)
 
 	return db
 }
