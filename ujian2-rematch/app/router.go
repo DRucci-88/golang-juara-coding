@@ -11,12 +11,13 @@ import (
 
 func NewRouter(
 	m *middleware.MiddlewareManager,
-	authHandler *handler.AuthHandler,
-	departmentHander *handler.DepartmentHandler,
-	positionHandler *handler.PositionHandler,
-	employeeHandler *handler.EmployeeHandler,
-	attendanceHandler *handler.AttendanceHandler,
-	leaveHandler *handler.LeaveHandler,
+	auth *handler.AuthHandler,
+	department *handler.DepartmentHandler,
+	position *handler.PositionHandler,
+	employee *handler.EmployeeHandler,
+	attendance *handler.AttendanceHandler,
+	leave *handler.LeaveHandler,
+	salary *handler.SalaryHandler,
 ) *gin.Engine {
 	r := gin.Default()
 
@@ -35,36 +36,38 @@ func NewRouter(
 		auth := authContext.(*dto.AuthContext)
 		ctx.JSON(200, gin.H{"data": auth})
 	})
-	authApi.POST("/login", authHandler.Login)
-	authApi.POST("/logout", m.JWT, authHandler.Logout)
+	authApi.POST("/login", auth.Login)
+	authApi.POST("/logout", m.JWT, auth.Logout)
 
 	departmentApi := r.Group("/departments")
-	departmentApi.POST("", departmentHander.Create)
-	departmentApi.GET("/:id", departmentHander.FindByID)
-	departmentApi.GET("", departmentHander.FindAll)
-	departmentApi.PUT("/:id", departmentHander.Update)
-	departmentApi.DELETE("/:id", departmentHander.Delete)
+	departmentApi.POST("", department.Create)
+	departmentApi.GET("/:id", department.FindByID)
+	departmentApi.GET("", department.FindAll)
+	departmentApi.PUT("/:id", department.Update)
+	departmentApi.DELETE("/:id", department.Delete)
 
 	positionApi := r.Group("/positions")
-	positionApi.POST("", positionHandler.Create)
-	positionApi.GET("/:id", positionHandler.FindByID)
-	positionApi.GET("", positionHandler.FindAll)
-	positionApi.PUT("/:id", positionHandler.Update)
-	positionApi.DELETE("/:id", positionHandler.Delete)
+	positionApi.POST("", position.Create)
+	positionApi.GET("/:id", position.FindByID)
+	positionApi.GET("", position.FindAll)
+	positionApi.PUT("/:id", position.Update)
+	positionApi.DELETE("/:id", position.Delete)
 
 	employeeApi := r.Group("/employees")
-	employeeApi.POST("", employeeHandler.Create)
-	employeeApi.GET("/:id", employeeHandler.FindByID)
-	employeeApi.GET("", employeeHandler.FindAll)
-	employeeApi.PUT("/:id", employeeHandler.Update)
+	employeeApi.POST("", employee.Create)
+	employeeApi.GET("/:id", employee.FindByID)
+	employeeApi.GET("", employee.FindAll)
+	employeeApi.PUT("/:id", employee.Update)
 
 	attendanceApi := r.Group("/attendances", m.JWT)
-	attendanceApi.POST("/check-in", attendanceHandler.CheckIn)
-	attendanceApi.POST("/check-out", attendanceHandler.CheckOut)
+	attendanceApi.POST("/check-in", attendance.CheckIn)
+	attendanceApi.POST("/check-out", attendance.CheckOut)
 
 	leaveApi := r.Group("/leaves", m.JWT)
-	leaveApi.POST("", leaveHandler.Create)
-	leaveApi.POST("/:id/approve", leaveHandler.Approval)
+	leaveApi.POST("", leave.Create)
+	leaveApi.POST("/:id/approve", leave.Approval)
 
+	salaryApi := r.Group("/salaries", m.JWT)
+	salaryApi.POST("/calculate", salary.Calculate)
 	return r
 }

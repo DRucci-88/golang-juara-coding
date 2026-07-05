@@ -9,7 +9,7 @@ import (
 type User struct {
 	gorm.Model
 	Role     UserRole `gorm:"type:varchar(20);not null"`
-	Email    string   `gorm:"type:varchar(100);not null"`
+	Email    string   `gorm:"type:varchar(100);not null;uniqueIndex"`
 	Password string   `gorm:"type:varchar(255)"`
 
 	Employee *Employee `gorm:"foreignKey:UserID"`

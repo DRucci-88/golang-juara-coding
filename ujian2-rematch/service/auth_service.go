@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"log"
 	"ujian2_rematch/dto"
 	"ujian2_rematch/helper"
 	"ujian2_rematch/model"
@@ -37,6 +38,8 @@ func (s *AuthService) Login(
 	if !helper.CheckPasswordHash(dto.Password, user.Password) {
 		return nil, model.ErrAuthUnauthorized
 	}
+
+	log.Printf("User %+v", user)
 
 	token, err := helper.GenerateJWT(user.ID, &user.Employee.ID, user.Email, user.Role)
 

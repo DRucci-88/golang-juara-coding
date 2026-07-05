@@ -32,7 +32,9 @@ func NewDatabase() *gorm.DB {
 		panic("Auto Migrate Failed " + err.Error())
 	}
 
-	seeder.Run(db)
+	if err := seeder.Run(db); err != nil {
+		panic("Seeder FAILED" + err.Error())
+	}
 
 	return db
 }

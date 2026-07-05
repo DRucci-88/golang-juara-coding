@@ -64,8 +64,18 @@ func seedUsersAndEmployees(db *gorm.DB) error {
 		Password: password,
 		Role:     model.UserRoleAdmin,
 	}
-
 	if err := db.Create(&admin).Error; err != nil {
+		return err
+	}
+	employee := model.Employee{
+		UserID:       admin.ID,
+		NIK:          "00000000",
+		FullName:     "Maha Admin",
+		Status:       model.EmployeeStatusActive,
+		DepartmentID: 1,
+		PositionID:   1,
+	}
+	if err := db.Create(&employee).Error; err != nil {
 		return err
 	}
 

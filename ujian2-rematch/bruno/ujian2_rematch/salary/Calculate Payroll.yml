@@ -1,0 +1,23 @@
+info:
+  name: "Calculate Payroll "
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseURL}}/salaries/calculate"
+  body:
+    type: json
+    data: |-
+      {
+        "period": "2026-07"
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

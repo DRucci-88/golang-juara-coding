@@ -32,7 +32,9 @@ func InitializedApplication() *Application {
 	attendanceHandler := handler.NewAttendanceHandler(attendanceService)
 	leaveService := service.NewLeaveService(repositoryManager)
 	leaveHandler := handler.NewLeaveHandler(leaveService)
-	engine := NewRouter(middlewareManager, authHandler, departmentHandler, positionHandler, employeeHandler, attendanceHandler, leaveHandler)
+	salaryService := service.NewSalaryService(repositoryManager)
+	salaryHandler := handler.NewSalaryHandler(salaryService)
+	engine := NewRouter(middlewareManager, authHandler, departmentHandler, positionHandler, employeeHandler, attendanceHandler, leaveHandler, salaryHandler)
 	tokenCleanupWorker := worker.NewTokenCleanupWorker(repositoryManager)
 	application := NewApplication(engine, tokenCleanupWorker)
 	return application

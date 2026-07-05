@@ -205,8 +205,12 @@ func (r *EmployeeRepository) ProcessWithoutPayrollInBatches(
 		Context: ctx,
 	})
 	salarySubQuery := gorm.G[model.Salary](db).
+		Where("employee_id = employees.id").
+		// Where(clause.Expr{
+		// 	SQL: "employee_id = employees.id",
+		// }).
 		// Where(generated.Salary.EmployeeID.Expr("= employees.id")).
-		Where(generated.Salary.EmployeeID.EqExpr(clause.Eq{Value: "employees.id"})).
+		// Where(generated.Salary.EmployeeID.EqExpr(clause.Eq{Value: "employees.id"})).
 		Where(generated.Salary.Period.Eq(period)).
 		Select("1")
 
@@ -214,16 +218,27 @@ func (r *EmployeeRepository) ProcessWithoutPayrollInBatches(
 
 	query := gorm.G[model.Employee](db)
 	return query.
-		Preload(
-			string(model.EmployeePreloadPosition),
-			func(db gorm.PreloadBuilder) error {
-				db.Select(generated.Position.BaseSalary.Column().Name)
-				return nil
-			}).
+		// Preload(string(model.EmployeePreloadPosition), nil).
+		// Preload(
+		// 	string(model.EmployeePreloadPosition),
+		// 	func(db gorm.PreloadBuilder) error {
+		// 		db.Select(generated.Position.BaseSalary.Column().Name)
+		// 		return nil
+		// 	}).
 		Where(generated.Employee.Status.Eq(string(model.EmployeeStatusActive))).
 		Not("EXISTS (?)", salarySubQuery).
 		FindInBatches(ctx, batchSize, handler)
 }
+
+// employee, err := r.queryWithPreloads(preloads...).
+// 	Where(generated.Employee.ID.Eq(id)).
+// 	First(ctx)
+
+// if errors.Is(err, gorm.ErrRecordNotFound) {
+// 	return nil, model.ErrEmployeeNotFound
+// }
+
+// return &employee, err
 
 // SELECT *
 // FROM employees e

@@ -33,6 +33,7 @@ func InitializedApplication() *Application {
 		handler.NewEmployeeHandler,
 		handler.NewAttendanceHandler,
 		handler.NewLeaveHandler,
+		handler.NewSalaryHandler,
 
 		// Service
 		service.NewAuthService,
@@ -41,6 +42,7 @@ func InitializedApplication() *Application {
 		service.NewEmployeeService,
 		service.NewAttendanceService,
 		service.NewLeaveService,
+		service.NewSalaryService,
 
 		// Repository Manager
 		repository.NewRepositoryManager,
