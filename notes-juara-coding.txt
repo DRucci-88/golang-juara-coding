@@ -7,8 +7,11 @@ Navicat
 Insomnia (postman equivalent) https://insomnia.rest/
 9router https://9router.com/
 https://stitch.withgoogle.com/
-
+https://render.com/docs/deploy-go-gin
+https://vercel.com/
+https://gamma.app/
 https://jsonplaceholder.typicode.com/posts
+
 
 go get github.com/gin-gonic/gin ;
 go get gorm.io/gorm ;
@@ -20,6 +23,7 @@ go get -u github.com/swaggo/gin-swagger ;
 go get -u github.com/swaggo/files ;
 go get golang.org/x/sync/errgroup ;
 go get github.com/brianvoe/gofakeit/v7 ;
+go get github.com/joho/godotenv ;
 
 Department
 Position
@@ -44,3 +48,6 @@ Swagger Wajib
 
 ALAMAK:
 Project menggunakan layout Clean Architecture dengan pemanfaatan dependency injection (Wire) dan latar belakang token cleanup worker yang baik. Namun, terjadi kekurangan yang sangat krusial pada pemenuhan tugas Project 3: kode program hanya menyediakan fitur otentikasi (register, login, logout) serta model karyawan dasar. Modul penggajian (payroll), anggaran divisi (department budget), serta pengajuan cuti (leave request) sama sekali belum diimplementasikan di repositori ini. Akibatnya, fungsionalitas transaksi database (ACID), pessimistic locking, dan mitigasi kerentanan IDOR pada cuti tidak dapat dievaluasi sama sekali karena fitur tersebut tidak ada.
+
+//go:build wireinject
+// +build wireinject
